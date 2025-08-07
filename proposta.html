@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Proposta Comercial - Via Painéis</title>
+    <link rel="stylesheet" href="style.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.10/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.10/vfs_fonts.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
+<script src="app.js"></script>
+
+</head>
+<body class="bg-gray-200" data-modulo="proposta">
+    <div id="conteudo-proposta" class="max-w-4xl mx-auto py-8 print:py-0">
+        <section class="bg-white shadow-lg min-h-[29.7cm] flex flex-col mb-8 print:mb-0 page-break print-page">
+            <img src="img/capa.jpg" alt="Proposta Comercial" class="w-full h-full object-cover">
+        </section>
+
+        <section class="bg-white shadow-lg min-h-[29.7cm] flex flex-col mb-8 print:mb-0 page-break print-page">
+             <img src="img/vantagens.jpeg" alt="Por que escolher a Via Painéis" class="w-full h-full object-cover">
+        </section>
+
+        <section class="bg-white shadow-lg min-h-[29.7cm] flex flex-col mb-8 print:mb-0 page-break print-page">
+             <img src="img/sobre.jpeg" alt="Quem Somos" class="w-full h-full object-cover">
+        </section>
+
+        <section class="bg-white shadow-lg min-h-[29.7cm] flex flex-col mb-8 print:mb-0 page-break print-page">
+             <img src="img/marcas.jpeg" alt="Nossas Marcas" class="w-full h-full object-cover">
+        </section>
+
+        <section class="bg-white p-12 shadow-lg min-h-[29.7cm] flex flex-col mb-8 print:mb-0 page-break print-page">
+            <header class="flex justify-between items-start">
+                <h1 class="text-3xl font-bold text-gray-800">Proposta comercial</h1>
+                <div class="w-28 h-10 bg-indigo-800"></div>
+            </header>
+            <main class="flex-grow mt-12 text-sm">
+                <section class="mb-10">
+                    <p class="font-bold">1 – OBJETO: <span id="objeto-proposta" class="font-normal">[Objeto]</span></p>
+                </section>
+                <section class="my-10">
+                    <h2 class="font-bold mb-3">Itens inclusos (Equipamentos):</h2>
+                    <div id="tabela-equipamentos" class="space-y-2"></div>
+                    <div class="line-item font-bold mt-4">
+                        <span class="label">Valor equipamentos</span><span class="dots"></span><span class="price" id="total-equipamentos">R$ 0,00</span>
+                    </div>
+                </section>
+                <section class="my-10">
+                    <p class="text-xs text-gray-600 mb-3 leading-tight">
+                        <strong>Itens complementares para instalação: (Materiais serralheria/ fixação):</strong> Visando a praticidade e a agilidade para nossos clientes, a Via Painéis possibilita a entrega do projeto 100% completo por possuir serralheria própria. Caso o cliente tenha empresa ou profissional de sua preferência, a Via Painéis orientará a maneira como devem ser executadas as estruturas de fixação.
+                    </p>
+                    <h2 class="font-bold mb-3">Itens opcionais complementares (Estrutura/ mão de obra):</h2>
+                    <ul id="lista-instalacao" class="list-none text-gray-700 space-y-1 pl-1"></ul>
+                     <div class="line-item font-bold mt-4">
+                        <span class="label">Valor materiais / instalação</span><span class="dots"></span><span class="price" id="total-instalacao">R$ 0,00</span>
+                    </div>
+                    <p class="text-xs text-gray-500 text-right">(Equipamentos, IPI, materiais de fixação e instalação)</p>
+                </section>
+                <div class="line-item font-bold text-base mt-12">
+                    <span class="label">Valor total do projeto</span><span class="dots"></span><span class="price" id="total-geral">R$ 0,00</span>
+                 </div>
+            </main>
+        </section>
+
+        <section class="bg-white p-12 shadow-lg min-h-[29.7cm] flex flex-col mb-8 print:mb-0 page-break print-page">
+             <header class="flex justify-between items-start">
+                <div></div>
+                <div class="w-28 h-10 bg-indigo-800"></div>
+            </header>
+            <main class="flex-grow mt-8 text-sm">
+                <h3 class="font-bold text-gray-800 mb-2">Condições de pagamento:</h3>
+                <ul class="list-disc list-inside text-gray-700 mb-8 pl-4 space-y-1">
+                    <li>A vista;</li>
+                    <li>50% de entrada e saldo em até 6x sem juros;</li>
+                    <li>Cartão de crédito em até 6x sem juros;</li>
+                    <li>Até 12x no cartão (consultar taxas).</li>
+                </ul>
+                <h3 class="font-bold text-gray-800 mb-2">Itens NÃO inclusos:</h3>
+                <ul class="list-none text-gray-700 mb-8 pl-1 space-y-1">
+                    <li><span class="font-bold mr-2">✓</span>Passagem do cabo de energia do painel até rede elétrica;</li>
+                    <li><span class="font-bold mr-2">✓</span>Passagem do cabo de dados do painel até internet (caso necessário);</li>
+                </ul>
+                <div class="space-y-2">
+                    <div class="line-item">
+                        <span class="label">Prazo de entrega</span><span class="dots"></span><span class="price">40 dias.</span>
+                    </div>
+                    <p class="text-xs text-gray-500 pl-1">(Após a assinatura do contrato)</p>
+                    <div class="line-item mt-2">
+                        <span class="label">Garantia</span><span class="dots"></span><span class="price">24 meses.</span>
+                    </div>
+                </div>
+                <p class="font-semibold mt-8">Esta proposta tem validade de 15 dias ou até durar o estoque.</p>
+            </main>
+            <footer class="pt-8 border-t mt-auto text-xs text-gray-600">
+                <div class="flex justify-between">
+                    <div>
+                        <p class="font-bold text-sm text-gray-800">Via Painéis</p>
+                        <p>CNPJ: 17.312.415/0001-01</p>
+                        <p>Inscrição Estadual: 256.916.454</p>
+                        <p>Avenida Colombo Machado Sales, 422</p>
+                        <p>Jardim Dourado</p>
+                        <p>Porto Belo - SC - CEP: 88210-000</p>
+                    </div>
+                    <div class="text-right">
+                        <p id="vendedor-nome" class="font-bold text-sm text-gray-800">[Nome do Vendedor]</p>
+                        <p id="vendedor-cargo" class="italic">[Cargo]</p>
+                        <p id="vendedor-fone" class="mt-2">[Telefone]</p>
+                        <p id="vendedor-email" class="text-blue-600">[Email]</p>
+                    </div>
+                </div>
+                <p class="mt-8" id="data-emissao">Porto Belo, 29 de julho de 2025</p>
+            </footer>
+        </section>
+
+        <section class="bg-white shadow-lg min-h-[29.7cm] flex flex-col mb-8 print:mb-0 page-break print-page">
+             <img src="img/cases.jpeg" alt="Portfólio de Projetos" class="w-full h-full object-cover">
+        </section>
+
+        <section class="bg-white shadow-lg min-h-[29.7cm] flex flex-col print-page">
+             <img src="img/final.jpeg" alt="Via Painéis" class="w-full h-full object-cover">
+        </section>
+    </div>
+    <div class="text-center my-8 print:hidden flex justify-center gap-4">
+        <button id="btnSalvarPDF" type="button" class="btn-indigo">Salvar como PDF</button>
+        <button id="btnSalvarWord" type="button" class="btn-indigo bg-blue-600 hover:bg-blue-700">Salvar como Word</button>
+    </div>
+</body>
+</html>
