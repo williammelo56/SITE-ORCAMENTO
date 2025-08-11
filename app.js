@@ -296,6 +296,19 @@ function atualizarCamposPilar() {
     else qtdContainer.classList.add('hidden');
 }
 
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("register-form");
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault(); // Impede o envio padrão do formulário
+
+    // Aqui você poderia salvar os dados, fazer validação, etc.
+    // Mas neste caso, só vai redirecionar
+
+    window.location.href = "login.html";
+  });
+});
+
 function toggleInstalacaoFields() {
     if (document.body.dataset.modulo !== 'totem') return;
     const tipoEntrega = document.querySelector('input[name="tipoEntrega"]:checked').value;
