@@ -7,7 +7,7 @@ const CONFIG = {
   custoDiariaHotel: 300,
   custoHoraMunk: 200,
   impostoInstalacao: 1.18,
-  precoAcmM2: 293,
+  precoAcmM2: 450,
   profundidadeTotemM: 0.10,
   bordaInternaTotemM: 0.04,
 };
@@ -261,6 +261,9 @@ function calcularOrcamento(modulo) {
       custoControladora *= 2;
   }
   const total = custoPainel + custoControladora + custoEstrutura + custoEletrica + custoInstalacao + custoPilar + custoSapata + custoACM;
+  let totalArredondado = Math.ceil(total / 100) * 100;
+let diferenca = totalArredondado - total;
+custoInstalacao += diferenca;
   ultimoResultado = { total, medidaFinal, painel: painelSelecionado, qtd, valorUnitario, custoPainel, custoControladora, custoEstrutura, custoEletrica, custoInstalacao, custoPilar, custoSapata, custoACM, totalACM, tipoEntrega, isDuplaFace, controladoraTexto: optionSelecionadaCtrl.text, vendedorId, modulo, inputs: getFormInputs(document.getElementById('orcamento-form')), valorPorMetroQuadrado };
   let resultadoHTML = `<h3 class="text-lg font-semibold mb-2">Resumo do Orçamento</h3><ul class="space-y-1">`;
   if (isDuplaFace) resultadoHTML += `<li><strong>Tipo:</strong> Dupla Face</li>`;
@@ -272,7 +275,7 @@ function calcularOrcamento(modulo) {
   if (custoSapata > 0) resultadoHTML += `<li><strong>Sapata:</strong> ${formatCurrency(custoSapata)}</li>`;
   resultadoHTML += `<li><strong>${tipoEntrega}:</strong> ${formatCurrency(custoInstalacao)}</li>`;
   resultadoHTML += `<li><strong>Controladora:</strong> ${formatCurrency(custoControladora)}</li>`;
-  resultadoHTML += `</ul><p class="mt-4 pt-2 border-t text-lg font-bold text-indigo-700">TOTAL: ${formatCurrency(total)}</p>`;
+  resultadoHTML += `</ul><p class="mt-4 pt-2 border-t text-lg font-bold text-indigo-700">TOTAL: ${formatCurrency(totalArredondado)}</p>`;
   resultadoDiv.innerHTML = resultadoHTML;
   resultadoDiv.classList.remove('hidden');
   document.getElementById('container-gerar-proposta')?.classList.remove('hidden');
@@ -296,19 +299,6 @@ function atualizarCamposPilar() {
     else qtdContainer.classList.add('hidden');
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("register-form");
-
-  form.addEventListener("submit", (e) => {
-    e.preventDefault(); // Impede o envio padrão do formulário
-
-    // Aqui você poderia salvar os dados, fazer validação, etc.
-    // Mas neste caso, só vai redirecionar
-
-    window.location.href = "login.html";
-  });
-});
-
 function toggleInstalacaoFields() {
     if (document.body.dataset.modulo !== 'totem') return;
     const tipoEntrega = document.querySelector('input[name="tipoEntrega"]:checked').value;
@@ -317,45 +307,103 @@ function toggleInstalacaoFields() {
 
 function preencherProposta() {
     const dados = JSON.parse(localStorage.getItem('dadosProposta'));
-    if (!dados) { document.body.innerHTML = '<h1>Dados da proposta não encontrados.</h1>'; return; }
+    if (dados) {
+    let totalArredondado = Math.ceil(dados.total / 100) * 100;
+    let diferenca = totalArredondado - dados.total;
+    dados.custoInstalacao += diferenca;
+    dados.total = totalArredondado;
+}
+
+    if (!dados) {
+        document.body.innerHTML = '<h1>Dados da proposta não encontrados.</h1>';
+        return;
+    }
+
     const vendedor = vendedores.find(v => v.id === dados.vendedorId);
     const totalEquipamentos = dados.custoPainel + dados.custoControladora;
     const totalInstalacao = dados.custoEstrutura + dados.custoEletrica + dados.custoInstalacao + dados.custoPilar + dados.custoSapata + dados.custoACM;
-    document.getElementById('objeto-proposta').textContent = `Painel LED ${dados.painel.resolucao} ${dados.painel.ambiente} ${dados.medidaFinal}`;
-    const tabelaEquipamentos = document.getElementById('tabela-equipamentos');
-    let equipamentosHTML = `
+
+    // Número da proposta
+    let contador = parseInt(localStorage.getItem('propostaContador')) || 0;
+    contador++;
+    localStorage.setItem('propostaContador', contador);
+    const numeroProposta = contador.toString().padStart(2, '0');
+
+    // Título + A/c
+    const tituloContainer = document.querySelector('h1');
+    if (tituloContainer) {
+        tituloContainer.innerHTML = `Proposta Comercial (${numeroProposta}-25)<br><span style="font-size: 1rem; font-weight: normal;">A/c: ${dados.inputs?.clienteNome || '-'}</span>`;
+    }
+
+    // Medidas em cm
+    const medidasCm = dados.medidaFinal
+        .replace(/m/g, '') // remove 'm'
+        .split('x')
+        .map(v => (parseFloat(v.trim()) * 100).toFixed(0) + 'cm')
+        .join('x');
+
+    // OBJETO
+    document.getElementById('objeto-proposta').textContent =
+        `Painel LED ${dados.painel.resolucao} ${dados.painel.ambiente} ${medidasCm}`;
+
+    // Equipamentos
+    let equipamentosHTML = "";
+
+    // Painel
+    const unidadesPainel = dados.isDuplaFace ? dados.qtd * 2 : dados.qtd;
+    const dimCm = dados.painel.dimensao.split('x').map(v => `${(parseFloat(v) * 100).toFixed(0)}cm`).join('x');
+    equipamentosHTML += `
         <div class="line-item text-sm">
-            <span class="label">✓ ${dados.isDuplaFace ? dados.qtd * 2 : dados.qtd} Gabinetes LED ${dados.painel.resolucao} - ${dados.painel.dimensao.replace('x','x')}cm - ${dados.painel.ambiente}<br><span class="text-xs text-gray-500 pl-4">(Lâmpada Kinglight)</span></span>
+            <span class="label">✓ ${unidadesPainel} ${dados.painel.tipo === 'm2' ? 'm² de' : 'gabinetes de'} LED ${dados.painel.resolucao} – ${dimCm} – ${dados.painel.ambiente}</span>
             <span class="dots"></span>
             <span class="price">${formatCurrency(dados.custoPainel)}</span>
         </div>
+        <div class="text-xs text-gray-500 pl-4">
+            (Valor por metro quadrado: ${formatCurrency(dados.valorPorMetroQuadrado)} – Lâmpada Kinglight – Resolução 2112x1152px)
+        </div>
+    `;
+
+    // Controladora
+    equipamentosHTML += `
         <div class="line-item text-sm">
-            <span class="label">✓ ${dados.isDuplaFace ? '2' : '1'} ${dados.controladoraTexto}</span>
+            <span class="label">✓ ${dados.controladoraTexto}</span>
             <span class="dots"></span>
             <span class="price">${formatCurrency(dados.custoControladora)}</span>
-        </div>`;
-    tabelaEquipamentos.innerHTML = equipamentosHTML;
+        </div>
+    `;
+
+    document.getElementById('tabela-equipamentos').innerHTML = equipamentosHTML;
     document.getElementById('total-equipamentos').textContent = formatCurrency(totalEquipamentos);
-    const listaInstalacao = document.getElementById('lista-instalacao');
-    listaInstalacao.innerHTML = '';
-    if (dados.custoEstrutura > 0) listaInstalacao.innerHTML += `<li><span class="font-bold mr-2">✓</span>Estrutura metálica superior de sustentação</li>`;
-    if (dados.custoEletrica > 0) listaInstalacao.innerHTML += `<li><span class="font-bold mr-2">✓</span>Elétrica de instalação interna</li>`;
-    if (dados.custoPilar > 0) listaInstalacao.innerHTML += `<li><span class="font-bold mr-2">✓</span>Pilar de ferro</li>`;
-    if (dados.custoSapata > 0) listaInstalacao.innerHTML += `<li><span class="font-bold mr-2">✓</span>Sapata de concreto</li>`;
-    if (dados.custoACM > 0) listaInstalacao.innerHTML += `<li><span class="font-bold mr-2">✓</span>Revestimento em ACM (${dados.totalACM.toFixed(2)} m²)</li>`;
-    if (dados.custoInstalacao > 0) listaInstalacao.innerHTML += `<li><span class="font-bold mr-2">✓</span>${dados.tipoEntrega} / configuração e fixação no local</li>`;
+
+    // Itens de instalação
+    let instalacaoHTML = "";
+    if (dados.custoEstrutura > 0) instalacaoHTML += `<li class="line-item"><span class="label">✓ Estrutura metálica superior de sustentação dos gabinetes de LED;</span><span class="dots"></span><span class="price">${formatCurrency(dados.custoEstrutura)}</span></li>`;
+    if (dados.custoEletrica > 0) instalacaoHTML += `<li class="line-item"><span class="label">✓ Elétrica de instalação interna;</span><span class="dots"></span><span class="price">${formatCurrency(dados.custoEletrica)}</span></li>`;
+    if (dados.custoPilar > 0) instalacaoHTML += `<li class="line-item"><span class="label">✓ Pilar de ferro;</span><span class="dots"></span><span class="price">${formatCurrency(dados.custoPilar)}</span></li>`;
+    if (dados.custoSapata > 0) instalacaoHTML += `<li class="line-item"><span class="label">✓ Sapata de concreto;</span><span class="dots"></span><span class="price">${formatCurrency(dados.custoSapata)}</span></li>`;
+    if (dados.custoACM > 0) instalacaoHTML += `<li class="line-item"><span class="label">✓ Revestimento em ACM (${dados.totalACM.toFixed(2)} m²);</span><span class="dots"></span><span class="price">${formatCurrency(dados.custoACM)}</span></li>`;
+    if (dados.custoInstalacao > 0) instalacaoHTML += `<li class="line-item"><span class="label">✓ ${dados.tipoEntrega} / configuração e fixação no local;</span><span class="dots"></span><span class="price">${formatCurrency(dados.custoInstalacao)}</span></li>`;
+
+    document.getElementById('lista-instalacao').innerHTML = instalacaoHTML;
     document.getElementById('total-instalacao').textContent = formatCurrency(totalInstalacao);
+
+    // Totais
     document.getElementById('total-geral').textContent = formatCurrency(dados.total);
+
+    // Vendedor
     if (vendedor) {
         document.getElementById('vendedor-nome').textContent = vendedor.nome;
         document.getElementById('vendedor-cargo').textContent = vendedor.cargo;
         document.getElementById('vendedor-fone').textContent = vendedor.fone;
         document.getElementById('vendedor-email').textContent = vendedor.email;
     }
+
+    // Data
     const hoje = new Date();
     const dataFormatada = hoje.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
     document.getElementById('data-emissao').textContent = `Porto Belo, ${dataFormatada}`;
 }
+
 
 async function gerarPDF() {
     const elementoParaImprimir = document.getElementById('conteudo-proposta');
@@ -417,12 +465,6 @@ function gerarWord() {
                     new TableCell({ children: [new Paragraph({ text: formatCurrency(dados.custoControladora), alignment: AlignmentType.RIGHT })] }),
                 ],
             }),
-            new TableRow({
-                children: [
-                    new TableCell({ children: [new Paragraph({ text: `Valor equipamentos`, style: "strong" })] }),
-                    new TableCell({ children: [new Paragraph({ text: formatCurrency(totalEquipamentos), style: "strong", alignment: AlignmentType.RIGHT })] }),
-                ],
-            }),
         ],
     });
 
@@ -433,9 +475,10 @@ function gerarWord() {
                 new Paragraph({ text: `\n1 – OBJETO: Painel LED ${dados.painel.resolucao} ${dados.painel.ambiente} ${dados.medidaFinal}` }),
                 new Paragraph({ text: "\nItens inclusos (Equipamentos):", style: "strong" }),
                 tableEquipamentos,
+                new Paragraph({ text: `Valor equipamentos................................................................... ${formatCurrency(totalEquipamentos)}`, style: "strong" }),
                 new Paragraph({ text: "\nItens opcionais complementares (Estrutura/ mão de obra):", style: "strong" }),
-                new Paragraph({ text: `Valor materiais / instalação: ${formatCurrency(totalInstalacao)}`, alignment: AlignmentType.RIGHT }),
-                new Paragraph({ text: `\nValor total do projeto: ${formatCurrency(dados.total)}`, heading: HeadingLevel.HEADING_2, alignment: AlignmentType.RIGHT }),
+                new Paragraph({ text: `Valor materiais / instalação........................................................ ${formatCurrency(totalInstalacao)}`, style: "strong" }),
+                new Paragraph({ text: `\nValor total do projeto.................................................................... ${formatCurrency(dados.total)}`, heading: HeadingLevel.HEADING_2, style: "strong"  }),
             ],
         }],
         styles: {
@@ -613,6 +656,7 @@ document.addEventListener('DOMContentLoaded', () => {
                       body: JSON.stringify({ title: tituloProposta, data: ultimoResultado })
                   });
                   if (!response.ok) throw new Error('Falha ao salvar a proposta.');
+                  
                   localStorage.setItem('dadosProposta', JSON.stringify(ultimoResultado));
                   window.open('../proposta.html', '_blank');
               } catch (error) {
