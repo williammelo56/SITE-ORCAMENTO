@@ -390,6 +390,31 @@ function preencherProposta() {
     // Totais
     document.getElementById('total-geral').textContent = formatCurrency(dados.total);
 
+     const totalProjeto = dados.total;
+    const condicoesContainer = document.getElementById('lista-condicoes');
+
+    // Opção 1: À vista com 5% de desconto (1+1)
+    const valorComDesconto = totalProjeto * 0.95;
+    const parcelaAVista = valorComDesconto / 2;
+    const condicao1 = `A vista 5% desconto (1+1): ${formatCurrency(parcelaAVista)} + 1 de ${formatCurrency(parcelaAVista)}`;
+
+    // Opção 2: 40% de entrada + 6x
+    const entrada40 = totalProjeto * 0.40;
+    const saldo6x = totalProjeto * 0.60;
+    const parcela6x = saldo6x / 6;
+    const condicao2 = `40% de entrada e saldo em 6x (boleto ou cartão) sem juros: ${formatCurrency(entrada40)} + 6x ${formatCurrency(parcela6x)}`;
+
+    // Opção 3: 12x no cartão com 8% de juros
+    const valorComJuros = totalProjeto * 1.08;
+    const parcela12x = valorComJuros / 12;
+    const condicao3 = `12x de ${formatCurrency(parcela12x)} no cartão de crédito`;
+
+    condicoesContainer.innerHTML = `
+        <li>${condicao1};</li>
+        <li>${condicao2};</li>
+        <li>${condicao3};</li>
+    `;
+
     // Vendedor
     if (vendedor) {
         document.getElementById('vendedor-nome').textContent = vendedor.nome;
@@ -430,7 +455,7 @@ function gerarWord() {
         return;
     }
 
-    const { Document, Packer, Paragraph, HeadingLevel, AlignmentType, Table, TableCell, TableRow, WidthType, BorderStyle } = window.docx;
+    const { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Table, TableCell, TableRow, WidthType, BorderStyle } = window.docx;
 
     const dados = JSON.parse(localStorage.getItem('dadosProposta'));
     if (!dados) {
@@ -449,41 +474,55 @@ function gerarWord() {
     const totalEquipamentos = dados.custoPainel + dados.custoControladora;
     const totalInstalacao = dados.custoEstrutura + dados.custoEletrica + dados.custoInstalacao + dados.custoPilar + dados.custoSapata + dados.custoACM;
 
-    const tableEquipamentos = new Table({
-        columnWidths: [8505, 2505],
-        borders: { top: { style: BorderStyle.NONE }, bottom: { style: BorderStyle.NONE }, left: { style: BorderStyle.NONE }, right: { style: BorderStyle.NONE } },
-        rows: [
-            new TableRow({
-                children: [
-                    new TableCell({ children: [new Paragraph({ text: `✓ ${dados.isDuplaFace ? dados.qtd * 2 : dados.qtd} Gabinetes LED ${dados.painel.resolucao} - ${dados.painel.dimensao.replace('x','x')}cm - ${dados.painel.ambiente}` })] }),
-                    new TableCell({ children: [new Paragraph({ text: formatCurrency(dados.custoPainel), alignment: AlignmentType.RIGHT })] }),
-                ],
-            }),
-            new TableRow({
-                children: [
-                    new TableCell({ children: [new Paragraph({ text: `✓ ${dados.isDuplaFace ? '2' : '1'} ${dados.controladoraTexto}` })] }),
-                    new TableCell({ children: [new Paragraph({ text: formatCurrency(dados.custoControladora), alignment: AlignmentType.RIGHT })] }),
-                ],
-            }),
-        ],
-    });
+    // Helper para criar uma linha da tabela
+    const createLineItemRow = (label, price) => {
+        return new TableRow({
+            children: [
+                new TableCell({
+                    children: [new Paragraph({ children: [new TextRun(label)] })],
+                    borders: { top: { style: BorderStyle.NONE }, bottom: { style: BorderStyle.NONE }, left: { style: BorderStyle.NONE }, right: { style: BorderStyle.NONE } },
+                }),
+                new TableCell({
+                    children: [new Paragraph({ text: price, alignment: AlignmentType.RIGHT })],
+                    borders: { top: { style: BorderStyle.NONE }, bottom: { style: BorderStyle.NONE }, left: { style: BorderStyle.NONE }, right: { style: BorderStyle.NONE } },
+                }),
+            ],
+        });
+    };
 
     const doc = new Document({
         sections: [{
             children: [
-                new Paragraph({ text: "Proposta comercial", heading: HeadingLevel.HEADING_1 }),
-                new Paragraph({ text: `\n1 – OBJETO: Painel LED ${dados.painel.resolucao} ${dados.painel.ambiente} ${dados.medidaFinal}` }),
-                new Paragraph({ text: "\nItens inclusos (Equipamentos):", style: "strong" }),
-                tableEquipamentos,
-                new Paragraph({ text: `Valor equipamentos................................................................... ${formatCurrency(totalEquipamentos)}`, style: "strong" }),
-                new Paragraph({ text: "\nItens opcionais complementares (Estrutura/ mão de obra):", style: "strong" }),
-                new Paragraph({ text: `Valor materiais / instalação........................................................ ${formatCurrency(totalInstalacao)}`, style: "strong" }),
-                new Paragraph({ text: `\nValor total do projeto.................................................................... ${formatCurrency(dados.total)}`, heading: HeadingLevel.HEADING_2, style: "strong"  }),
+                new Paragraph({ text: "Proposta comercial", heading: HeadingLevel.HEADING_1, spacing: { after: 400 } }),
+                new Paragraph({ text: `1 – OBJETO: Painel LED ${dados.painel.resolucao} ${dados.painel.ambiente} ${dados.medidaFinal}`, spacing: { after: 200 } }),
+                new Paragraph({ text: "Itens inclusos (Equipamentos):", style: "strong", spacing: { after: 200 } }),
+                new Table({
+                    columnWidths: [8000, 2000],
+                    rows: [
+                        createLineItemRow(`✓ ${dados.isDuplaFace ? dados.qtd * 2 : dados.qtd} Gabinetes LED ${dados.painel.resolucao} - ${dados.painel.dimensao.replace('x','x')}cm - ${dados.painel.ambiente}`, formatCurrency(dados.custoPainel)),
+                        createLineItemRow(`✓ ${dados.isDuplaFace ? '2' : '1'} ${dados.controladoraTexto}`, formatCurrency(dados.custoControladora)),
+                        createLineItemRow('Valor equipamentos', formatCurrency(totalEquipamentos)),
+                    ],
+                }),
+                new Paragraph({ text: "\nItens opcionais complementares (Estrutura/ mão de obra):", style: "strong", spacing: { after: 200 } }),
+                new Table({
+                    columnWidths: [8000, 2000],
+                    rows: [
+                        createLineItemRow('Valor materiais / instalação', formatCurrency(totalInstalacao)),
+                    ],
+                }),
+                new Paragraph({ text: "", spacing: { after: 400 } }),
+                new Table({
+                    columnWidths: [8000, 2000],
+                    rows: [
+                        createLineItemRow('Valor total do projeto', formatCurrency(dados.total)),
+                    ],
+                }),
             ],
         }],
         styles: {
-            paragraph: { run: { size: "22pt" } },
-            strong: { run: { bold: true } },
+            paragraph: { run: { size: "22pt" } }, // 11pt
+            strong: { run: { bold: true, size: "22pt" } },
         }
     });
 
@@ -498,8 +537,6 @@ function gerarWord() {
 }
 
 async function carregarHistorico() {
-    const token = localStorage.getItem('authToken');
-    if (!token) { window.location.href = 'login.html'; return; }
     try {
         const response = await fetch('http://localhost:3000/propostas', {
             headers: { 'Authorization': `Bearer ${token}` }

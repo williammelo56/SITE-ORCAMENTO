@@ -22,14 +22,14 @@
     </div>
 
     <h2 class="text-lg font-semibold mb-2">Tipo de Face</h2>
-    <div class="flex items-center gap-6 mb-4">
-        <label class="flex items-center gap-2">
-            <input type="radio" name="tipoFace" value="uma" checked> Uma Face
-        </label>
-        <label class="flex items-center gap-2">
-            <input type="radio" name="tipoFace" value="dupla"> Dupla Face
-        </label>
-    </div>
+<div class="flex items-center gap-6 mb-4">
+    <label class="flex items-center gap-2">
+        <input type="radio" name="tipoFace" value="uma" checked> Uma Face
+    </label>
+    <label class="flex items-center gap-2">
+        <input type="radio" name="tipoFace" value="dupla"> Dupla Face
+    </label>
+</div>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
       <div>
         <label for="larguraPainel" class="block text-sm font-medium text-gray-700 mb-1">Largura (m)</label>
@@ -94,5 +94,24 @@
   <div id="container-gerar-proposta" class="mt-4 hidden">
     <button type="button" id="btnGerarProposta" class="btn-indigo">📄 Gerar Proposta</button>
   </div>
+  <script>
+    // Pega todos os radios de tipo de face e o input do valor da estrutura
+    const radiosFace = document.querySelectorAll('input[name="tipoFace"]');
+    const inputValorEstrutura = document.getElementById("valorEstrutura");
+
+    // Função que atualiza o valor do input
+    function atualizarValorEstrutura() {
+        const faceSelecionada = document.querySelector('input[name="tipoFace"]:checked').value;
+        inputValorEstrutura.value = faceSelecionada === "dupla" ? 1800 : 1360;
+    }
+
+    // Atualiza o valor quando a página carrega
+    atualizarValorEstrutura();
+
+    // Atualiza o valor sempre que o usuário mudar a face
+    radiosFace.forEach(radio => {
+        radio.addEventListener("change", atualizarValorEstrutura);
+    });
+</script>
 </body>
 </html>

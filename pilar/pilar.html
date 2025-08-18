@@ -129,5 +129,24 @@
   <div id="container-gerar-proposta" class="mt-4 hidden">
     <button type="button" id="btnGerarProposta" class="btn-indigo">📄 Gerar Proposta</button>
   </div>
+  <script>
+    // Pega todos os radios de tipo de face e o input do valor da estrutura
+    const radiosFace = document.querySelectorAll('input[name="tipoFace"]');
+    const inputValorEstrutura = document.getElementById("valorEstrutura");
+
+    // Função que atualiza o valor do input
+    function atualizarValorEstrutura() {
+        const faceSelecionada = document.querySelector('input[name="tipoFace"]:checked').value;
+        inputValorEstrutura.value = faceSelecionada === "dupla" ? 1800 : 1360;
+    }
+
+    // Atualiza o valor quando a página carrega
+    atualizarValorEstrutura();
+
+    // Atualiza o valor sempre que o usuário mudar a face
+    radiosFace.forEach(radio => {
+        radio.addEventListener("change", atualizarValorEstrutura);
+    });
+</script>
 </body>
 </html>
