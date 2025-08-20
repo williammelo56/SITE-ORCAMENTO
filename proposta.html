@@ -1,126 +1,467 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-modulo="proposta">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Proposta Comercial - Via Painéis</title>
-    <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Proposta Comercial</title>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.10/pdfmake.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.10/vfs_fonts.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
+  <style>
+    /* Layout de página A4 paisagem para visualização e impressão */
+    :root {
+      --page-width: 297mm;
+      --page-height: 210mm;
+      --page-padding: 20mm;
+      --text-color: #111;
+      --muted: #666;
+      --border: #DDD;
+      --brand: #1f2937;
+      --accent: #111;
+      --via-blue: #4A90E2;
+    }
 
-    <script src="app.js"></script>
+    html, body {
+      margin: 0;
+      padding: 0;
+      color: var(--text-color);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #f5f6f8;
+      font-size: 11pt;
+      line-height: 1.4;
+    }
+
+    #toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 12px 16px;
+      background: #ffffffcc;
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .btn {
+      appearance: none;
+      border: 1px solid #cfd4dc;
+      background: white;
+      color: #111;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .btn:hover { background: #f7f7f7; }
+
+    #conteudo-proposta {
+      display: block;
+      max-width: var(--page-width);
+      margin: 16px auto 48px;
+    }
+
+    section.print-page {
+      width: var(--page-width);
+      min-height: var(--page-height);
+      background: white;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+      border: 1px solid var(--border);
+      box-sizing: border-box;
+      padding: var(--page-padding);
+      position: relative;
+      margin: 0 auto 16px;
+      overflow: hidden;
+    }
+
+    /* Logo VIA */
+    .logo-via {
+      position: absolute;
+      top: 20mm;
+      left: 20mm;
+      width: 60px;
+      height: 30px;
+      border: 2px solid var(--via-blue);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 14pt;
+      color: var(--via-blue);
+      letter-spacing: 2px;
+    }
+
+    /* Cabeçalho */
+    .header-content {
+      margin-left: 0;
+      margin-top: 50px;
+    }
+
+    h1 {
+      margin: 0 0 8px 0;
+      font-size: 18pt;
+      line-height: 1.2;
+      color: var(--text-color);
+      font-weight: 700;
+    }
+
+    .cliente-info {
+      margin: 0 0 20px 0;
+      font-size: 11pt;
+    }
+
+    /* Seções principais */
+    .section {
+      margin: 20px 0;
+    }
+
+    .section-title {
+      font-size: 11pt;
+      font-weight: 700;
+      color: var(--text-color);
+      margin: 0 0 8px 0;
+    }
+
+    /* Objeto */
+    .objeto {
+      margin: 20px 0;
+      font-size: 11pt;
+    }
+
+    /* Itens com checkmark */
+    .item-list {
+      list-style: none;
+      padding: 0;
+      margin: 8px 0;
+    }
+
+    .item-list li {
+      display: flex;
+      align-items: baseline;
+      margin: 4px 0;
+      font-size: 11pt;
+    }
+
+    .item-list li::before {
+      content: "✓";
+      margin-right: 8px;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .item-content {
+      flex: 1;
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .item-description {
+      flex: 0 1 auto;
+    }
+
+    .item-dots {
+      flex: 1 1 auto;
+      border-bottom: 1px dotted #666;
+      height: 0;
+      transform: translateY(-2px);
+    }
+
+    .price {
+  margin-left: auto;
+  font-weight: 700;
+  white-space: nowrap;
+  text-align: right;
+}
+
+    /* Linhas pontilhadas para valores */
+    .dotted-line {
+      display: flex;
+      align-items: baseline;
+      margin: 8px 0;
+      font-size: 11pt;
+    }
+
+    .dotted-line .label {
+      flex: 0 0 auto;
+      font-weight: 700;
+    }
+
+    .dotted-line .dots {
+      flex: 1;
+      border-bottom: 1px dotted #666;
+      margin: 0 8px;
+      height: 0;
+      transform: translateY(-2px);
+    }
+
+    .line-item {
+  display: flex;
+  align-items: baseline;
+  width: 100%;
+}
+
+    .dotted-line .value {
+  margin-left: auto;
+  font-weight: 700;
+  white-space: nowrap;
+  text-align: right;
+}
+
+    /* Subtotais e totais */
+    .subtotal {
+      margin: 12px 0;
+      padding: 8px 0;
+      border-top: 1px solid #ddd;
+    }
+
+    .total {
+      margin: 16px 0;
+      padding: 8px 0;
+      border-top: 2px solid #333;
+      font-size: 12pt;
+      font-weight: 700;
+    }
+
+    /* Condições de pagamento */
+    .payment-conditions {
+      margin: 20px 0;
+    }
+
+    .payment-conditions ul {
+      list-style: disc;
+      padding-left: 20px;
+      margin: 8px 0;
+    }
+
+    .payment-conditions li {
+      margin: 4px 0;
+      font-size: 11pt;
+    }
+
+    /* Informações adicionais */
+    .additional-info {
+      margin: 20px 0;
+      font-size: 11pt;
+    }
+
+    .company-info {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 30px;
+    }
+
+    .company-details {
+      flex: 1;
+    }
+
+    .contact-info {
+      flex: 1;
+      text-align: right;
+    }
+
+    .contact-info a {
+      color: var(--via-blue);
+      text-decoration: none;
+    }
+
+    .date-location {
+      margin-top: 20px;
+      font-size: 11pt;
+    }
+
+    /* Detalhes técnicos em fonte menor */
+    .technical-details {
+      font-size: 9pt;
+      color: var(--muted);
+      margin-left: 20px;
+      font-style: italic;
+    }
+
+    /* Responsividade */
+    @media screen and (max-width: 1200px) {
+      section.print-page {
+        width: 100%;
+        min-height: auto;
+        padding: 16px;
+      }
+      #conteudo-proposta { margin: 0; }
+      .logo-via { position: relative; top: 0; left: 0; margin-bottom: 20px; }
+      .header-content { margin-top: 0; }
+    }
+
+    @media print {
+      body { background: white; }
+      #toolbar { display: none !important; }
+      #conteudo-proposta { margin: 0; }
+      section.print-page {
+        box-shadow: none;
+        border: none;
+        page-break-after: always;
+        margin: 0;
+        width: 297mm;
+        min-height: 210mm;
+        padding: 20mm;
+      }
+    }
+  </style>
 </head>
-<body class="bg-gray-200" data-modulo="proposta">
-    <div id="conteudo-proposta" class="max-w-4xl mx-auto py-8 print:py-0">
-        <section class="bg-white shadow-lg min-h-[29.7cm] flex flex-col mb-8 print:mb-0 page-break print-page">
-            <img src="img/capa.jpg" alt="Proposta Comercial" class="w-full h-full object-cover">
-        </section>
+<body data-modulo="proposta">
+  <div id="toolbar">
+    <button id="btnSalvarPDF" class="btn">Salvar PDF</button>
+    <button id="btnSalvarWord" class="btn">Salvar Word</button>
+  </div>
 
-        <section class="bg-white shadow-lg min-h-[29.7cm] flex flex-col mb-8 print:mb-0 page-break print-page">
-             <img src="img/vantagens.jpeg" alt="Por que escolher a Via Painéis" class="w-full h-full object-cover">
-        </section>
+  <div id="conteudo-proposta">
+    <!-- Página 1 -->
+    <section class="print-page">
+      <!-- Logo VIA -->
+      <div class="logo-via">VIA</div>
 
-        <section class="bg-white shadow-lg min-h-[29.7cm] flex flex-col mb-8 print:mb-0 page-break print-page">
-             <img src="img/sobre.jpeg" alt="Quem Somos" class="w-full h-full object-cover">
-        </section>
+      <!-- Cabeçalho -->
+      <div class="header-content">
+        <h1>Proposta Comercial</h1>
+        <div class="cliente-info">
+          <strong>A/c:</strong> <span id="cliente-nome">-</span>,
+        </div>
+      </div>
 
-        <section class="bg-white shadow-lg min-h-[29.7cm] flex flex-col mb-8 print:mb-0 page-break print-page">
-             <img src="img/marcas.jpeg" alt="Nossas Marcas" class="w-full h-full object-cover">
-        </section>
+      <!-- Objeto -->
+      <div class="objeto">
+        <strong>Objeto:</strong> <span id="objeto-proposta">Painel de LED outdoor P5.0mm outdoor 288x480cm Dupla face</span>
+      </div>
 
-        <section class="bg-white p-12 shadow-lg min-h-[29.7cm] flex flex-col mb-8 print:mb-0 page-break print-page">
-            <header class="flex justify-between items-start">
-                <h1 class="text-3xl font-bold text-gray-800">Proposta comercial</h1>
-                <div class="w-28 h-10 bg-indigo-800"></div>
-            </header>
-            <main class="flex-grow mt-12 text-sm">
-                <section class="mb-10">
-                    <p class="font-bold">1 – OBJETO: <span id="objeto-proposta" class="font-normal">[Objeto]</span></p>
-                </section>
-                <section class="my-10">
-                    <h2 class="font-bold mb-3">Itens inclusos (Equipamentos):</h2>
-                    <div id="tabela-equipamentos" class="space-y-2"></div>
-                    <div class="line-item font-bold mt-4">
-                        <span class="label">Valor equipamentos</span><span class="dots"></span><span class="price" id="total-equipamentos">R$ 0,00</span>
-                    </div>
-                </section>
-                <section class="my-10">
-                    <p class="text-xs text-gray-600 mb-3 leading-tight">
-                        <strong>Itens complementares para instalação: (Materiais serralheria/ fixação):</strong> Visando a praticidade e a agilidade para nossos clientes, a Via Painéis possibilita a entrega do projeto 100% completo por possuir serralheria própria. Caso o cliente tenha empresa ou profissional de sua preferência, a Via Painéis orientará a maneira como devem ser executadas as estruturas de fixação.
-                    </p>
-                    <h2 class="font-bold mb-3">Itens opcionais complementares (Estrutura/ mão de obra):</h2>
-                    <ul id="lista-instalacao" class="list-none text-gray-700 space-y-1 pl-1"></ul>
-                     <div class="line-item font-bold mt-4">
-                        <span class="label">Valor materiais / instalação</span><span class="dots"></span><span class="price" id="total-instalacao">R$ 0,00</span>
-                    </div>
-                    <p class="text-xs text-gray-500 text-right">(Equipamentos, IPI, materiais de fixação e instalação)</p>
-                </section>
-                <div class="line-item font-bold text-base mt-12">
-                    <span class="label">Valor total do projeto</span><span class="dots"></span><span class="price" id="total-geral">R$ 0,00</span>
-                 </div>
-            </main>
-        </section>
+      <!-- Itens inclusos (Equipamentos) -->
+      <div class="section">
+        <div class="section-title">Itens inclusos (Equipamentos):</div>
+        
+        <div id="tabela-equipamentos">
+          <!-- Conteúdo será preenchido via JavaScript -->
+        </div>
 
-        <section class="bg-white p-12 shadow-lg min-h-[29.7cm] flex flex-col mb-8 print:mb-0 page-break print-page">
-             <header class="flex justify-between items-start">
-                <div></div>
-                <div class="w-28 h-10 bg-indigo-800"></div>
-            </header>
-            <main class="flex-grow mt-8 text-sm">
-    <h3 class="font-bold text-gray-800 mb-2">Condições de pagamento:</h3>
-    <ul id="lista-condicoes" class="list-disc list-inside text-gray-700 mb-8 pl-4 space-y-1">
+        <div class="subtotal">
+          <div class="dotted-line">
+            <span class="label">Valor equipamentos</span>
+            <span class="dots"></span>
+            <span class="value" id="total-equipamentos">R$ 201.800,00</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Itens opcionais complementares -->
+      <div class="section">
+        <div class="section-title">Itens opcionais complementares (Estrutura/ mão de obra):</div>
+        
+        <ul class="item-list" id="lista-instalacao">
+          <!-- Conteúdo será preenchido via JavaScript -->
         </ul>
-    <h3 class="font-bold text-gray-800 mb-2">Itens NÃO inclusos:</h3>
-    <ul class="list-none text-gray-700 mb-8 pl-1 space-y-1">
-        <li><span class="font-bold mr-2">✓</span>Passagem do cabo de energia do painel até rede elétrica;</li>
-        <li><span class="font-bold mr-2">✓</span>Passagem do cabo de dados do painel até internet (caso necessário);</li>
-    </ul>
-    <div class="space-y-2">
-        <div class="line-item">
-            <span class="label">Prazo de entrega</span><span class="dots"></span><span class="price">30 dias.</span>
-        </div>
-        <p class="text-xs text-gray-500 pl-1">(Após a assinatura do contrato)</p>
-        <div class="line-item mt-2">
-            <span class="label">Garantia</span><span class="dots"></span><span class="price">24 meses.</span>
-        </div>
-    </div>
-    <p class="font-semibold mt-8">Esta proposta tem validade de 15 dias ou até durar o estoque.</p>
-</main>
-            <footer class="pt-8 border-t mt-auto text-xs text-gray-600">
-                <div class="flex justify-between">
-                    <div>
-                        <p class="font-bold text-sm text-gray-800">Via Painéis</p>
-                        <p>CNPJ: 17.312.415/0001-01</p>
-                        <p>Inscrição Estadual: 256.916.454</p>
-                        <p>Avenida Colombo Machado Sales, 422</p>
-                        <p>Jardim Dourado</p>
-                        <p>Porto Belo - SC - CEP: 88210-000</p>
-                    </div>
-                    <div class="text-right">
-                        <p id="vendedor-nome" class="font-bold text-sm text-gray-800">[Nome do Vendedor]</p>
-                        <p id="vendedor-cargo" class="italic">[Cargo]</p>
-                        <p id="vendedor-fone" class="mt-2">[Telefone]</p>
-                        <p id="vendedor-email" class="text-blue-600">[Email]</p>
-                    </div>
-                </div>
-                <p class="mt-8" id="data-emissao">11 de agosto de 2025</p>
-            </footer>
-        </section>
 
-        <section class="bg-white shadow-lg min-h-[29.7cm] flex flex-col mb-8 print:mb-0 page-break print-page">
-             <img src="img/cases.jpeg" alt="Portfólio de Projetos" class="w-full h-full object-cover">
-        </section>
+        <div class="subtotal">
+          <div class="dotted-line">
+            <span class="label">Valor materiais/instalação</span>
+            <span class="dots"></span>
+            <span class="value" id="total-instalacao">R$ 38.040,00</span>
+          </div>
+        </div>
+      </div>
 
-        <section class="bg-white shadow-lg min-h-[29.7cm] flex flex-col print-page">
-             <img src="img/final.jpeg" alt="Via Painéis" class="w-full h-full object-cover">
-        </section>
-    </div>
-    <div class="text-center my-8 print:hidden flex justify-center gap-4">
-        <button id="btnSalvarPDF" type="button" class="btn-indigo">Salvar como PDF</button>
-        <button id="btnSalvarWord" type="button" class="btn-indigo bg-blue-600 hover:bg-blue-700">Salvar como Word</button>
-    </div>
+      <!-- Valor total -->
+      <div class="total">
+        <div class="dotted-line">
+          <span class="label">Valor total</span>
+          <span class="dots"></span>
+          <span class="value" id="total-geral">R$ 239.840,00</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Página 2 -->
+    <section class="print-page">
+      <!-- Condições de pagamento -->
+      <div class="payment-conditions">
+        <div class="section-title">Condições de pagamento:</div>
+        <ul id="lista-condicoes">
+          <!-- Conteúdo será preenchido via JavaScript -->
+        </ul>
+      </div>
+
+      <!-- Prazo e Garantia -->
+      <div class="additional-info">
+        <div class="dotted-line">
+          <span class="label">Prazo de entrega</span>
+          <span class="dots"></span>
+          <span class="value">30 dias</span>
+        </div>
+        <div style="font-style: italic; font-size: 10pt; margin-left: 0; margin-top: 2px;">
+          (Após a assinatura do contrato)
+        </div>
+        
+        <div class="dotted-line" style="margin-top: 12px;">
+          <span class="label">Garantia</span>
+          <span class="dots"></span>
+          <span class="value">24 meses</span>
+        </div>
+      </div>
+
+      <!-- Itens complementares -->
+      <div class="additional-info">
+        <div class="section-title">Itens complementares para instalação: (Materiais serralheria/ fixação):</div>
+        <p>Visando a praticidade e a agilidade para nossos clientes, a Via Painéis possibilita a entrega do <strong>projeto 100% completo</strong> por possuir serralheria própria. Caso o cliente tenha empresa ou profissional de sua preferência, a Via Painéis orientará a maneira como devem ser executadas as estruturas de fixação.</p>
+      </div>
+
+      <!-- Validade -->
+      <div class="additional-info">
+        <p><strong>Esta proposta tem validade de 15 dias ou até durar o estoque.</strong></p>
+      </div>
+
+      <!-- Informações da empresa e contato -->
+      <div class="company-info">
+        <div class="company-details">
+          <div class="section-title">Via Painéis</div>
+          <p>CNPJ: 17.312.415/0001-01<br>
+          Inscrição Estadual: 256.916.454<br>
+          Avenida Colombo Machado Sales, 422- Jardim Dourado<br>
+          Porto Belo - SC - CEP: 88210-000</p>
+        </div>
+        
+        <div class="contact-info">
+          <div class="section-title" id="vendedor-nome">Patricia Gomez</div>
+          <p id="vendedor-cargo">Consultora comercial – Via Painéis<br>
+          <span id="vendedor-fone">(47) 93618-1267</span><br>
+          <a href="mailto:vendas5@viapaineis.com.br" id="vendedor-email">vendas5@viapaineis.com.br</a></p>
+        </div>
+      </div>
+
+      <!-- Data -->
+      <div class="date-location">
+        <span id="data-emissao">Porto Belo, 15 de agosto de 2025</span>
+      </div>
+    </section>
+  </div>
+
+  <!-- Scripts necessários -->
+  <!-- Biblioteca para capturar a página em imagem -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  
+  <!-- Biblioteca para criar PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.70/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.70/vfs_fonts.js"></script>
+
+  <!-- Biblioteca para criar Word DOCX -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.8.2/docx.min.js"></script>
+
+  <!-- Seu código -->
+  <script src="./app.js"></script>
+  <script>
+    // Replicar a data no rodapé da 2ª página se necessário
+    document.addEventListener('DOMContentLoaded', () => {
+      const dataEmissao = document.getElementById('data-emissao');
+      const dataEmissaoDup = document.getElementById('data-emissao-dup');
+      if (dataEmissao && dataEmissaoDup) {
+        dataEmissaoDup.textContent = dataEmissao.textContent;
+      }
+    });
+  </script>
 </body>
 </html>
