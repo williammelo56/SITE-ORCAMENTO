@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Proposta Comercial</title>
 
+
   <style>
     /* Layout de página A4 paisagem para visualização e impressão */
     :root {
@@ -78,18 +79,29 @@
     .logo-via {
       position: absolute;
       top: 20mm;
-      left: 20mm;
-      width: 60px;
-      height: 30px;
-      border: 2px solid var(--via-blue);
+      right: 20mm;
+      left: auto;
+      max-width: 180px;
+      max-height: 60px;
+      width: auto;
+      height: auto;
       border-radius: 4px;
       display: flex;
       align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      font-size: 14pt;
-      color: var(--via-blue);
-      letter-spacing: 2px;
+      justify-content: flex-end;
+      background: transparent;
+      font-weight: normal;
+      font-size: initial;
+      color: initial;
+      letter-spacing: initial;
+    }
+    .logo-via img {
+      max-width: 10000%;
+      max-height: 600px;
+      width: 60%;
+      height: 60%;
+      object-fit: contain;
+      display: block;
     }
 
     /* Cabeçalho */
@@ -258,7 +270,9 @@
 
     .contact-info {
       flex: 1;
-      text-align: right;
+      text-align: left;
+      margin-left: 500px;
+      margin-top: 58px;
     }
 
     .contact-info a {
@@ -277,6 +291,48 @@
       color: var(--muted);
       margin-left: 20px;
       font-style: italic;
+    }
+
+    /* Imagens em página inteira */
+    .full-page-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+    }
+    section.print-page.img-page {
+      padding: 0 !important;
+      position: relative;
+      overflow: hidden;
+    }
+    section.print-page.img-page > img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    @media print {
+      section.print-page.img-page {
+        box-shadow: none;
+        border: none;
+        page-break-after: always;
+        margin: 0;
+        width: 297mm;
+        min-height: 210mm;
+        padding: 0 !important;
+      }
+      section.print-page.img-page > img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
     }
 
     /* Responsividade */
@@ -304,6 +360,15 @@
         min-height: 210mm;
         padding: 20mm;
       }
+      section.print-page.no-break-print {
+      break-inside: avoid;
+      page-break-inside: avoid;
+      /* Garante altura exata da página */
+      min-height: 210mm !important;
+      height: 210mm !important;
+      max-height: 210mm !important;
+      overflow: visible !important;
+    }
     }
   </style>
 </head>
@@ -314,10 +379,26 @@
   </div>
 
   <div id="conteudo-proposta">
+    <!-- 4 páginas de imagem antes das páginas de texto -->
+    <section class="print-page img-page">
+      <img src="img/capa1.jpg" alt="Página 1" class="full-page-img" />
+    </section>
+    <section class="print-page img-page">
+      <img src="img/quem2.jpg" alt="Página 2" class="full-page-img" />
+    </section>
+    <section class="print-page img-page">
+      <img src="img/servicos3.jpg" alt="Página 3" class="full-page-img" />
+    </section>
+    <section class="print-page img-page">
+      <img src="img/marcas4.jpg" alt="Página 4" class="full-page-img" />
+    </section>
+
     <!-- Página 1 -->
-    <section class="print-page">
+    <section class="print-page no-break-print">
       <!-- Logo VIA -->
-      <div class="logo-via">VIA</div>
+      <div class="logo-via">
+        <img src="img/logo1.png" alt="Logo VIA" />
+      </div>
 
       <!-- Cabeçalho -->
       <div class="header-content">
@@ -378,6 +459,11 @@
 
     <!-- Página 2 -->
     <section class="print-page">
+      <!-- Logo VIA na página 2 -->
+      <div class="logo-via">
+        <img src="img/logo1.png" alt="Logo VIA" />
+      </div>
+
       <!-- Condições de pagamento -->
       <div class="payment-conditions">
         <div class="section-title">Condições de pagamento:</div>
@@ -394,7 +480,7 @@
           <span class="value">30 dias</span>
         </div>
         <div style="font-style: italic; font-size: 10pt; margin-left: 0; margin-top: 2px;">
-          (Após a assinatura do contrato)
+          (Após a assinatura do contrato e pagamento da entrada)
         </div>
         
         <div class="dotted-line" style="margin-top: 12px;">
@@ -419,17 +505,20 @@
       <div class="company-info">
         <div class="company-details">
           <div class="section-title">Via Painéis</div>
-          <p>CNPJ: 17.312.415/0001-01<br>
-          Inscrição Estadual: 256.916.454<br>
-          Avenida Colombo Machado Sales, 422- Jardim Dourado<br>
-          Porto Belo - SC - CEP: 88210-000</p>
+          <p>
+            CNPJ: 17.312.415/0001-01<br>
+            Inscrição Estadual: 256.916.454<br>
+            Avenida Colombo Machado Sales, 422- Jardim Dourado<br>
+            Porto Belo - SC - CEP: 88210-000
+          </p>
         </div>
-        
         <div class="contact-info">
-          <div class="section-title" id="vendedor-nome">Patricia Gomez</div>
-          <p id="vendedor-cargo">Consultora comercial – Via Painéis<br>
-          <span id="vendedor-fone">(47) 93618-1267</span><br>
-          <a href="mailto:vendas5@viapaineis.com.br" id="vendedor-email">vendas5@viapaineis.com.br</a></p>
+          <div id="vendedor-nome">Nome vendedor completo</div>
+          <div id="vendedor-cargo">Cargo - Via Painéis</div>
+          <div id="vendedor-fone">(xx) 9999-9999</div>
+          <div>
+            <a href="mailto:viapaineis@viapaineis.com.br" id="vendedor-email">viapaineis@viapaineis.com.br</a>
+          </div>
         </div>
       </div>
 
@@ -437,6 +526,17 @@
       <div class="date-location">
         <span id="data-emissao">Porto Belo, 15 de agosto de 2025</span>
       </div>
+    </section>
+
+    <!-- 3 páginas de imagem após as páginas de texto -->
+    <section class="print-page img-page">
+      <img src="img/parceiros5.jpg" alt="Página 5" class="full-page-img" />
+    </section>
+    <section class="print-page img-page">
+      <img src="img/proximos6.jpg" alt="Página 6" class="full-page-img" />
+    </section>
+    <section class="print-page img-page">
+      <img src="img/final7.jpg" alt="Página 7" class="full-page-img" />
     </section>
   </div>
 
@@ -463,5 +563,37 @@
       }
     });
   </script>
+ <script>
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    const dados = JSON.parse(localStorage.getItem('dadosProposta'));
+    
+    if (dados && typeof dados.total === 'number') {
+      const totalOriginal = dados.total;
+      const totalArredondado = Math.ceil(totalOriginal / 100) * 100;
+      const diferenca = totalArredondado - totalOriginal;
+      
+      if (diferenca > 0) {
+        // Adiciona diferença na instalação
+        dados.custoInstalacao = (dados.custoInstalacao || 0) + diferenca;
+        dados.total = totalArredondado;
+        
+        // Atualiza tela
+        const totalInstalacao = (dados.custoEstrutura || 0) + (dados.custoEletrica || 0) + 
+                               (dados.custoInstalacao || 0) + (dados.custoPilar || 0) + 
+                               (dados.custoSapata || 0) + (dados.custoACM || 0);
+        
+        document.getElementById('total-instalacao').textContent = 
+          totalInstalacao.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        document.getElementById('total-geral').textContent = 
+          totalArredondado.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        
+        // Salva dados
+        localStorage.setItem('dadosProposta', JSON.stringify(dados));
+      }
+    }
+  }, 200);
+});
+</script>
 </body>
 </html>

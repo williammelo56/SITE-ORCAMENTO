@@ -17,77 +17,159 @@
 
     <h2 class="text-lg font-semibold mb-2">Dados do Cliente</h2>
     <div>
-        <label for="clienteNome" class="block text-sm font-medium text-gray-700 mb-1">Nome do Cliente</label>
-        <input type="text" id="clienteNome" class="input mb-4" placeholder="Nome completo" />
+    <label for="clienteNome" class="block text-sm font-medium text-gray-700 mb-1">Nome do Cliente</label>
+    <input type="text" id="clienteNome" class="input mb-4" placeholder="Nome completo" />
     </div>
 
     <h2 class="text-lg font-semibold mb-2">Tipo de Face</h2>
 <div class="flex items-center gap-6 mb-4">
     <label class="flex items-center gap-2">
-        <input type="radio" name="tipoFace" value="uma" checked> Uma Face
+    <input type="radio" name="tipoFace" value="uma" checked> Uma Face
     </label>
     <label class="flex items-center gap-2">
-        <input type="radio" name="tipoFace" value="dupla"> Dupla Face
+    <input type="radio" name="tipoFace" value="dupla"> Dupla Face
+    </label>
+    <label class="flex items-center gap-2">
+    <input type="radio" name="tipoFace" value="dupla_angulo"> Dupla face LED com ângulo
+    </label>
+    <label class="flex items-center gap-2">
+    <input type="radio" name="tipoFace" value="dupla_lona"> Dupla face LED com LONA
+    </label>
+    <label class="flex items-center gap-2">
+    <input type="radio" name="tipoFace" value="dupla_angulo_lona"> Dupla face com ângulo LED com LONA
     </label>
 </div>
+<!-- INÍCIO: Incluir Lona (adicionar após os campos do form) -->
+<div id="container-incluir-lona" class="hidden mt-2">
+  <label for="incluirLona" class="block text-sm font-medium text-gray-700">Incluir lona no pedido?</label>
+  <select id="incluirLona" name="incluirLona" class="mt-1 block w-48 rounded border-gray-300">
+    <option value="nao">Não</option>
+    <option value="sim">Sim</option>
+  </select>
+</div>
+<!-- FIM: Incluir Lona -->
+
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-      <div>
-        <label for="larguraPainel" class="block text-sm font-medium text-gray-700 mb-1">Largura (m)</label>
-        <input type="number" id="larguraPainel" class="input" placeholder="Ex: 4.80" step="0.01" />
+    <div>
+    <label for="larguraPainel" class="block text-sm font-medium text-gray-700 mb-1">Largura (m)</label>
+    <input type="number" id="larguraPainel" class="input" placeholder="Ex: 4.80" step="0.01" />
+    </div>
+    <div>
+    <label for="alturaPainel" class="block text-sm font-medium text-gray-700 mb-1">Altura (m)</label>
+    <input type="number" id="alturaPainel" class="input" placeholder="Ex: 2.88" step="0.01" />
+    </div>
+    </div>
+    <div>
+    <label for="modeloPainel" class="block text-sm font-medium text-gray-700 mb-1">Modelo do Painel</label>
+    <select id="modeloPainel" class="input mb-4">
+    <option value="">Selecionar modelo do painel</option>
+    </select>
+    </div>
+    <div>
+    <label for="valorUnitario" class="block text-sm font-medium text-gray-700 mb-1">Valor Unitário do Painel (R$)</label>
+    <input type="number" id="valorUnitario" class="input mb-4" readonly />
+    </div>
+    <div>
+    <label for="valorEstrutura" class="block text-sm font-medium text-gray-700 mb-1">Valor Unitário da Estrutura (R$)</label>
+    <input type="number" id="valorEstrutura" class="input mb-6" value="1360" />
+    </div>
+
+    <!-- NOVO: Incluir Borda + seleção do tipo -->
+    <div class="mb-4">
+      <label class="flex items-center gap-2">
+        <input type="checkbox" id="incluirBorda" /> Incluir borda no pedido?
+      </label>
+      <div id="bordaOptions" style="display:none; margin-top:8px;">
+        <label for="tipoBorda" class="block text-sm font-medium text-gray-700 mb-1">Tipo de borda</label>
+        <select id="tipoBorda" class="input w-48">
+          <option value="15x10">15x10 — R$ 293,00 / m</option>
+          <option value="40x10">40x10 — R$ 345,00 / m</option>
+        </select>
       </div>
-      <div>
-        <label for="alturaPainel" class="block text-sm font-medium text-gray-700 mb-1">Altura (m)</label>
-        <input type="number" id="alturaPainel" class="input" placeholder="Ex: 2.88" step="0.01" />
-      </div>
     </div>
-    <div>
-      <label for="modeloPainel" class="block text-sm font-medium text-gray-700 mb-1">Modelo do Painel</label>
-      <select id="modeloPainel" class="input mb-4">
-        <option value="">Selecionar modelo do painel</option>
-      </select>
-    </div>
-    <div>
-      <label for="valorUnitario" class="block text-sm font-medium text-gray-700 mb-1">Valor Unitário do Painel (R$)</label>
-      <input type="number" id="valorUnitario" class="input mb-4" readonly />
-    </div>
-    <div>
-      <label for="valorEstrutura" class="block text-sm font-medium text-gray-700 mb-1">Valor Unitário da Estrutura (R$)</label>
-      <input type="number" id="valorEstrutura" class="input mb-6" value="1360" />
-    </div>
+    <!-- FIM: Borda -->
+
     <h2 class="text-lg font-semibold mb-2">Instalação</h2>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-      <div>
-        <label for="kmLocal" class="block text-sm font-medium text-gray-700 mb-1">Distância até o local (km)</label>
-        <input type="number" id="kmLocal" class="input" placeholder="Ex: 150" />
-      </div>
-      <div>
-        <label for="tempoViagem" class="block text-sm font-medium text-gray-700 mb-1">Tempo de viagem (h)</label>
-        <input type="number" id="tempoViagem" class="input" placeholder="Ex: 2" />
-      </div>
-      <div>
-        <label for="funcionarios" class="block text-sm font-medium text-gray-700 mb-1">Nº de Funcionários</label>
-        <input type="number" id="funcionarios" class="input" placeholder="Ex: 3" />
-      </div>
-      <div>
-        <label for="tempoTrabalho" class="block text-sm font-medium text-gray-700 mb-1">Horas de trabalho</label>
-        <input type="number" id="tempoTrabalho" class="input" placeholder="Ex: 16" />
-      </div>
-      <div>
-        <label for="horasMunk" class="block text-sm font-medium text-gray-700 mb-1">Horas MUNCK</label>
-        <input type="number" id="horasMunk" class="input" placeholder="Ex: 4" />
-      </div>
+    <div>
+    <label for="kmLocal" class="block text-sm font-medium text-gray-700 mb-1">Distância até o local (km)</label>
+    <input type="number" id="kmLocal" class="input" placeholder="Ex: 150" />
     </div>
     <div>
-      <label for="controladora" class="block text-sm font-medium text-gray-700 mb-1">Controladora</label>
-      <select id="controladora" class="input mb-6">
-        <option value="">Selecionar Controladora</option>
-        <option value="Novastar TB1" data-valor="1450">Controladora de video - Novastar TB1</option>
-        <option value="Huidu A3" data-valor="1040">Controladora de video - Huidu A3</option>
-        <option value="Novastar TB2" data-valor="2400">Controladora de vídeo - Novastar TB2</option>
-        <option value="Novastar TB30" data-valor="3450">Controladora de vídeo - Novastar TB30</option>
-        <option value="Novastar TB40" data-valor="4900">Controladora de vídeo - Novastar TB40</option>
-      </select>
+    <label for="tempoViagem" class="block text-sm font-medium text-gray-700 mb-1">Tempo de viagem (h)</label>
+    <input type="number" id="tempoViagem" class="input" placeholder="Ex: 2" />
     </div>
+    <div>
+    <label for="funcionarios" class="block text-sm font-medium text-gray-700 mb-1">Nº de Funcionários</label>
+    <input type="number" id="funcionarios" class="input" placeholder="Ex: 3" />
+    </div>
+    <div>
+    <label for="tempoTrabalho" class="block text-sm font-medium text-gray-700 mb-1">Horas de trabalho</label>
+    <input type="number" id="tempoTrabalho" class="input" placeholder="Ex: 16" />
+    </div>
+    <div>
+    <label for="horasMunk" class="block text-sm font-medium text-gray-700 mb-1">Horas MUNCK</label>
+    <input type="number" id="horasMunk" class="input" placeholder="Ex: 4" />
+    </div>
+    </div>
+    <div>
+    <label for="controladora" class="block text-sm font-medium text-gray-700 mb-1">Controladora</label>
+    <select id="controladora" class="input mb-6">
+    <option value="">Selecionar Controladora</option>
+    <option value="Novastar TB1" data-valor="1450">Controladora de video - Novastar TB1</option>
+    <option value="Huidu A3" data-valor="1040">Controladora de video - Huidu A3</option>
+    <option value="Novastar TB2" data-valor="2400">Controladora de vídeo - Novastar TB2</option>
+    <option value="Novastar TB30" data-valor="3450">Controladora de vídeo - Novastar TB30</option>
+    <option value="Novastar TB40" data-valor="4900">Controladora de vídeo - Novastar TB40</option>
+    </select>
+    </div>
+    <!-- INÍCIO: Pergunta e campos do Pilar de ferro (copiado de pilar.html) -->
+<div class="mt-4">
+      <label class="flex items-center gap-2">
+        <input type="checkbox" id="incluirPilar" /> Incluir pilar de ferro?
+      </label>
+    </div>
+
+    <div id="container-pilar" class="mt-4 hidden">
+      <h2 class="text-lg font-semibold mb-2">Estrutura do Pilar</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div>
+          <label for="tipoPilar" class="block text-sm font-medium text-gray-700 mb-1">Tipo de Pilar</label>
+          <select id="tipoPilar" class="input">
+            <option value="6500">Pé direito 30/30 cm 4,2 metros</option>
+            <option value="2500">Pé direito 30/30 cm até 1,5 metros</option>
+            <option value="5300">Pé direito 30/30 cm até 3 metros</option>
+            <option value="46900">Pé direito até 12 metros</option>
+            <option value="2960" data-calandrado="true">Pé direito Calandrado - Metro</option>
+          </select>
+        </div>
+        <div>
+          <label for="valorPilarManual" class="block text-sm font-medium text-gray-700 mb-1">Valor do Pilar (R$)</label>
+          <input type="number" id="valorPilarManual" class="input" />
+        </div>
+      </div>
+
+      <div id="container-qtd-calandrado" class="mb-6 hidden">
+        <label for="qtdPilarCalandrado" class="block text-sm font-medium text-gray-700 mb-1">Quantidade (metros)</label>
+        <input type="number" id="qtdPilarCalandrado" class="input" value="1" min="1" />
+      </div>
+
+      <h2 class="text-lg font-semibold mb-2">Sapatas</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div>
+          <label for="modeloSapata" class="block text-sm font-medium text-gray-700 mb-1">Modelo da Sapata</label>
+          <select id="modeloSapata" class="input">
+            <option value="2960">Concreto com ferro armado (R$ 2.960,00)</option>
+            <option value="2394">Concreto com ferro armado completa (R$ 2.394,00)</option>
+          </select>
+        </div>
+        <div>
+          <label for="qtdSapatas" class="block text-sm font-medium text-gray-700 mb-1">Quantidade de Sapatas</label>
+          <input type="number" id="qtdSapatas" class="input" value="1" min="0" />
+        </div>
+      </div>
+    </div>
+<!-- FIM: Pergunta e campos do Pilar de ferro -->
     <button type="submit" class="btn-indigo mb-6">💰 Calcular Orçamento</button>
   </form>
   <div id="resultado" class="bg-white p-4 rounded shadow text-gray-800 hidden"></div>
@@ -101,17 +183,69 @@
 
     // Função que atualiza o valor do input
     function atualizarValorEstrutura() {
-        const faceSelecionada = document.querySelector('input[name="tipoFace"]:checked').value;
-        inputValorEstrutura.value = faceSelecionada === "dupla" ? 1800 : 1360;
+    const faceSelecionada = document.querySelector('input[name="tipoFace"]:checked').value;
+    if (faceSelecionada === "uma") {
+    inputValorEstrutura.value = 1360;
+    } else if (faceSelecionada === "dupla") {
+    inputValorEstrutura.value = 1800;
+    } else if (faceSelecionada === "dupla_angulo") {
+    inputValorEstrutura.value = 1360;
+    } else if (faceSelecionada === "dupla_lona") {
+    inputValorEstrutura.value = 1560;
+    } else if (faceSelecionada === "dupla_angulo_lona") {
+    inputValorEstrutura.value = 1760;
+    }
     }
 
     // Atualiza o valor quando a página carrega
     atualizarValorEstrutura();
 
+    const chkPilar = document.getElementById('incluirPilar');
+const containerPilar = document.getElementById('container-pilar');
+if (chkPilar && containerPilar) {
+  chkPilar.addEventListener('change', () => {
+    containerPilar.classList.toggle('hidden', !chkPilar.checked);
+    // chama a função do app.js para ajustar campos do pilar (se existir)
+    if (typeof atualizarCamposPilar === 'function') {
+      atualizarCamposPilar();
+    } else {
+      // fallback: mostrar/esconder qtd calandrado localmente
+      const tipoPilarLocal = document.getElementById('tipoPilar');
+      const containerCal = document.getElementById('container-qtd-calandrado');
+      if (tipoPilarLocal && containerCal) {
+        const opt = tipoPilarLocal.options[tipoPilarLocal.selectedIndex];
+        containerCal.classList.toggle('hidden', !(opt && opt.dataset.calandrado === 'true'));
+      }
+    }
+  });
+
+  // se o usuário interagir com o select de tipoPilar, atualiza campos (usa atualizarCamposPilar do app.js quando presente)
+  const tipoPilarEl = document.getElementById('tipoPilar');
+  if (tipoPilarEl) {
+    tipoPilarEl.addEventListener('change', () => {
+      if (typeof atualizarCamposPilar === 'function') atualizarCamposPilar();
+      else {
+        const opt = tipoPilarEl.options[tipoPilarEl.selectedIndex];
+        document.getElementById('container-qtd-calandrado').classList.toggle('hidden', !(opt && opt.dataset.calandrado === 'true'));
+      }
+    });
+  }
+}
     // Atualiza o valor sempre que o usuário mudar a face
     radiosFace.forEach(radio => {
-        radio.addEventListener("change", atualizarValorEstrutura);
+    radio.addEventListener("change", atualizarValorEstrutura);
     });
+
+    // Toggle Borda
+    const incluirBorda = document.getElementById('incluirBorda');
+    const bordaOptions = document.getElementById('bordaOptions');
+    if (incluirBorda && bordaOptions) {
+      incluirBorda.addEventListener('change', () => {
+        bordaOptions.style.display = incluirBorda.checked ? 'block' : 'none';
+      });
+      // inicial
+      bordaOptions.style.display = incluirBorda.checked ? 'block' : 'none';
+    }
 </script>
 </body>
 </html>
