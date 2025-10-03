@@ -821,7 +821,7 @@ function gerarWord() {
 async function carregarHistorico() {
     try {
     const token = localStorage.getItem('authToken');
-    const response = await fetch('http://localhost:3000/propostas', {
+    const response = await fetch('https://backend-viapaineis.onrender.com/propostas', {
     headers: { 'Authorization': `Bearer ${token}` }
     });
     if (!response.ok) throw new Error('Falha ao carregar o histórico.');
@@ -872,7 +872,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const email = form.email.value;
     const password = form.password.value;
     try {
-    const response = await fetch('http://localhost:3000/register', {
+    const response = await fetch('https://backend-viapaineis.onrender.com/register', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ name, email, password })
@@ -894,7 +894,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const email = form.email.value;
     const password = form.password.value;
     try {
-    const response = await fetch('http://localhost:3000/login', {
+    const response = await fetch('https://backend-viapaineis.onrender.com/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password })
@@ -989,7 +989,7 @@ const vendedorNome = vendedor ? vendedor.nome : 'Geral';
 const tituloProposta = `${vendedorNome} - ${clienteNome}`;
 
     try {
-    const response = await fetch('http://localhost:3000/propostas', {
+    const response = await fetch('https://backend-viapaineis.onrender.com/propostas', {
     method: 'POST',
     headers: {
     'Content-Type': 'application/json',
