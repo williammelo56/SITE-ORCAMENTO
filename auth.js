@@ -1,9 +1,9 @@
 // auth.js
 // Verifica token e redireciona para login.html se não autenticado.
-// Requisitos: window.API_BASE definido (ou ajustar para http://localhost:3000)
+// Requisitos: window.API_BASE definido (ou ajustar para https://backend-viapaineis.onrender.com)
 
 (function () {
-  const API_BASE = (typeof window !== 'undefined' && window.API_BASE) ? window.API_BASE : 'http://localhost:3000';
+  const API_BASE = (typeof window !== 'undefined' && window.API_BASE) ? window.API_BASE : 'https://backend-viapaineis.onrender.com';
   const PUBLIC_PAGES = ['/login.html', '/register.html', '/']; // ajustar se necessário
   const pathname = window.location.pathname;
   const page = pathname.substring(pathname.lastIndexOf('/') + 1) || '/';
