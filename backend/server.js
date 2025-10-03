@@ -9,8 +9,13 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // middlewares globais
-app.use(cors());
+app.use(cors({ origin: 'site-orcamento-five.vercel.app' })); // substitua pelo seu frontend ou use '*' temporariamente
 app.use(express.json());
+app.use(express.static('public')); // se tiver assets
+
+app.get('/health', (req, res) => res.send('OK'));
+
+app.listen(PORT, () => console.log(`Server started on ${PORT}`));
 
 // inicializa Supabase (usar service_role apenas no server)
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
