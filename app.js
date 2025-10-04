@@ -390,9 +390,12 @@ custoControladora *= multiplicaControladora;
 
 // Calcular estrutura: quantidadeDeEstruturas × multiplicaEstrutura × valorEstruturaUnit
 custoEstrutura = quantidadeDeEstruturas * multiplicaEstrutura * valorEstruturaUnit;
+
+// Condição para zerar estrutura no módulo 'parede'
 if (modulo === 'parede') {
   custoEstrutura = 0;
 }
+
 const total = custoPainel + custoControladora + custoEstrutura + custoEletrica + custoInstalacao + custoPilar + custoSapata + custoACM + custoBorda;
 
 ultimoResultado = { 
@@ -435,8 +438,6 @@ function hideResultOnInputChange() {
     document.getElementById('resultado')?.classList.add('hidden');
     document.getElementById('container-gerar-proposta')?.classList.add('hidden');
 }
-
-
 
 function atualizarCamposPilar() {
     const select = document.getElementById('tipoPilar');
@@ -542,7 +543,6 @@ function preencherProposta() {
       }
     }
 
-    // --- NOVO: calcular "Valor por metro quadrado" mostrado conforme regras solicitadas ---
     // --- NOVO: calcular "Valor por metro quadrado" mostrado conforme regras solicitadas ---
     const valorUnitarioNum = Number(dados.valorUnitario) || 0;
     const valorPorM2Num = Number(dados.valorPorMetroQuadrado) || 0;
@@ -699,7 +699,6 @@ function preencherProposta() {
     document.getElementById('data-emissao').textContent = `Porto Belo, ${dataFormatada}`;
 }
 
-
 async function gerarPDF() {
     const elementoParaImprimir = document.getElementById('conteudo-proposta');
     const paginas = elementoParaImprimir.querySelectorAll('section.print-page');
@@ -727,7 +726,6 @@ function gerarWord() {
     return;
     }
     
-
     const { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Table, TableCell, TableRow, WidthType, BorderStyle } = window.docx;
 
     const dados = JSON.parse(localStorage.getItem('dadosProposta'));
@@ -854,161 +852,187 @@ async function carregarHistorico() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  const body = document.body;
-  const moduloAtual = body.dataset.modulo;
-  if (!moduloAtual) return;
+    const body = document.body;
 
-  if (moduloAtual === 'proposta') {
-    preencherProposta();
-    const btnSalvarPDF = document.getElementById('btnSalvarPDF');
-    const btnSalvarWord = document.getElementById('btnSalvarWord');
-    if (btnSalvarPDF) btnSalvarPDF.addEventListener('click', gerarPDF);
-    if (btnSalvarWord) btnSalvarWord.addEventListener('click', gerarWord);
-  } 
-  else if (moduloAtual === 'register') {
-    const form = document.getElementById('register-form');
-    if (form) {
-    form.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    const name = form.name.value;
-    const email = form.email.value;
-    const password = form.password.value;
-    try {
-    const response = await fetch('https://backend-viapaineis.onrender.com/register', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name, email, password })
-    });
-    const message = await response.text();
-    alert(message);
-    if (response.ok) form.reset();
-    } catch (error) {
-    alert('Erro ao conectar com o servidor.');
-    }
-    });
-    }
-  }
-  else if (moduloAtual === 'login') {
-    const form = document.getElementById('login-form');
-    if (form) {
-    form.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    const email = form.email.value;
-    const password = form.password.value;
-    try {
-    const response = await fetch('https://backend-viapaineis.onrender.com/login', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password })
-    });
-    if (response.ok) {
-    const data = await response.json();
-    localStorage.setItem('authToken', data.token);
-    alert('Login bem-sucedido!');
-    window.location.href = 'index.html';
-    } else {
-    const message = await response.text();
-    alert(`Falha no login: ${message}`);
-    }
-    } catch (error) {
-    alert('Erro ao conectar com o servidor.');
-    }
-    });
-    }
-  }
-  else if (moduloAtual === 'historico') {
-    carregarHistorico();
-  }
-  else { // Lógica das páginas de cálculo
-    carregarModelos();
-    carregarVendedores();
-    const dadosParaCarregar = JSON.parse(localStorage.getItem('propostaParaCarregar'));
-    if (dadosParaCarregar && dadosParaCarregar.modulo === moduloAtual) {
-    preencherFormulario(dadosParaCarregar);
-    localStorage.removeItem('propostaParaCarregar');
-    document.getElementById('modeloPainel')?.dispatchEvent(new Event('change', { bubbles: true }));
-
-// silencia alertas durante o cálculo inicial
-window.__carregandoHistorico = true;
-setTimeout(() => {
-  calcularOrcamento(moduloAtual);
-  window.__carregandoHistorico = false;
-}, 0);
-    setTimeout(() => {
-    calcularOrcamento(moduloAtual);
-    }, 200);
-    }
-    const form = document.getElementById('orcamento-form');
-    const selectModelo = document.getElementById('modeloPainel');
-    if (selectModelo) selectModelo.addEventListener('change', atualizarPainelSelecionado);
-    if (moduloAtual === 'totem') {
-    const radiosEntrega = document.querySelectorAll('input[name="tipoEntrega"]');
-    radiosEntrega.forEach(radio => radio.addEventListener('change', toggleInstalacaoFields));
-    toggleInstalacaoFields(); 
-    }
-    if (moduloAtual === 'pilar') {
-    const tipoPilarSelect = document.getElementById('tipoPilar');
-    if (tipoPilarSelect) {
-    tipoPilarSelect.addEventListener('change', atualizarCamposPilar);
-    atualizarCamposPilar();
-    }
-    }
-
-    // Show/hide borda options (if present)
-    const incluirBorda = document.getElementById('incluirBorda');
-    const bordaOptions = document.getElementById('bordaOptions');
-    if (incluirBorda && bordaOptions) {
-      incluirBorda.addEventListener('change', () => {
-      bordaOptions.style.display = incluirBorda.checked ? 'block' : 'none';
-      });
-      // sync initial state
-      bordaOptions.style.display = incluirBorda.checked ? 'block' : 'none';
-    }
-
-    if (form) {
-    form.addEventListener('submit', (event) => {
-    event.preventDefault();
-    calcularOrcamento(moduloAtual);
-    });
-    const formInputs = form.querySelectorAll('input, select');
-    formInputs.forEach(input => input.addEventListener('change', hideResultOnInputChange));
-    const btnGerarProposta = document.getElementById('btnGerarProposta');
-    if (btnGerarProposta) {
-    btnGerarProposta.addEventListener('click', async () => {
-    if (!ultimoResultado) {
-    alert("Calcule um orçamento antes de gerar a proposta.");
-    return;
-    }
+    // --- INÍCIO DO CÓDIGO DE PROTEÇÃO ---
+    const moduloAtual = body.dataset.modulo;
     const token = localStorage.getItem('authToken');
-    if (!token) {
-    alert("Sessão expirada. Por favor, faça login novamente.");
-    window.location.href = 'login.html';
-    return;
-    }
-    const vendedor = vendedores.find(v => v.id === ultimoResultado.vendedorId);
-const clienteNome = ultimoResultado?.inputs?.clienteNome || '-';
-const vendedorNome = vendedor ? vendedor.nome : 'Geral';
-const tituloProposta = `${vendedorNome} - ${clienteNome}`;
 
-    try {
-    const response = await fetch('https://backend-viapaineis.onrender.com/propostas', {
-    method: 'POST',
-    headers: {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${token}`
-    },
-    body: JSON.stringify({ title: tituloProposta, data: ultimoResultado })
-    });
-    if (!response.ok) throw new Error('Falha ao salvar a proposta.');
-    
-    // Salva os dados atuais (não ajustados) para impressão em outra aba — o preencherProposta da página proposta.html fará o ajuste de arredondamento para exibição
-    localStorage.setItem('dadosProposta', JSON.stringify(ultimoResultado));
-    window.open('../proposta.html', '_blank');
-    } catch (error) {
-    alert(error.message);
+    // Lista de páginas que são públicas (não precisam de login)
+    const paginasPublicas = ['login', 'register'];
+
+    // Verifica se a página atual NÃO é pública E se o usuário NÃO tem um token
+    if (!paginasPublicas.includes(moduloAtual) && !token) {
+        
+        // Define o caminho correto para a página de login
+        let caminhoParaLogin = 'login.html';
+
+        // Lista de módulos que estão dentro de subpastas (ex: /fachada/fachada.html)
+        const modulosEmSubpasta = ['fachada', 'totem', 'vitrine', 'parede'];
+
+        // Se o módulo atual estiver em uma subpasta, o caminho precisa voltar um nível (../)
+        if (modulosEmSubpasta.includes(moduloAtual)) {
+            caminhoParaLogin = '../login.html';
+        }
+
+        // Redireciona o usuário para a tela de login
+        window.location.href = caminhoParaLogin;
+        
+        return; // Para a execução do resto do script para evitar erros na página
     }
-    });
+    // --- FIM DO CÓDIGO DE PROTEÇÃO ---
+
+    if (moduloAtual === 'proposta') {
+      preencherProposta();
+      const btnSalvarPDF = document.getElementById('btnSalvarPDF');
+      const btnSalvarWord = document.getElementById('btnSalvarWord');
+      if (btnSalvarPDF) btnSalvarPDF.addEventListener('click', gerarPDF);
+      if (btnSalvarWord) btnSalvarWord.addEventListener('click', gerarWord);
+    } 
+    else if (moduloAtual === 'register') {
+      const form = document.getElementById('register-form');
+      if (form) {
+      form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const name = form.name.value;
+      const email = form.email.value;
+      const password = form.password.value;
+      try {
+      const response = await fetch('https://backend-viapaineis.onrender.com/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password })
+      });
+      const message = await response.text();
+      alert(message);
+      if (response.ok) form.reset();
+      } catch (error) {
+      alert('Erro ao conectar com o servidor.');
+      }
+      });
+      }
     }
+    else if (moduloAtual === 'login') {
+      const form = document.getElementById('login-form');
+      if (form) {
+      form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const email = form.email.value;
+      const password = form.password.value;
+      try {
+      const response = await fetch('https://backend-viapaineis.onrender.com/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+      });
+      if (response.ok) {
+      const data = await response.json();
+      localStorage.setItem('authToken', data.token);
+      alert('Login bem-sucedido!');
+      window.location.href = 'index.html';
+      } else {
+      const message = await response.text();
+      alert(`Falha no login: ${message}`);
+      }
+      } catch (error) {
+      alert('Erro ao conectar com o servidor.');
+      }
+      });
+      }
     }
-  }
+    else if (moduloAtual === 'historico') {
+      carregarHistorico();
+    }
+    else { // Lógica das páginas de cálculo
+      carregarModelos();
+      carregarVendedores();
+      const dadosParaCarregar = JSON.parse(localStorage.getItem('propostaParaCarregar'));
+      if (dadosParaCarregar && dadosParaCarregar.modulo === moduloAtual) {
+      preencherFormulario(dadosParaCarregar);
+      localStorage.removeItem('propostaParaCarregar');
+      document.getElementById('modeloPainel')?.dispatchEvent(new Event('change', { bubbles: true }));
+
+      // silencia alertas durante o cálculo inicial
+      window.__carregandoHistorico = true;
+      setTimeout(() => {
+        calcularOrcamento(moduloAtual);
+        window.__carregandoHistorico = false;
+      }, 0);
+      setTimeout(() => {
+          calcularOrcamento(moduloAtual);
+      }, 200);
+      }
+      const form = document.getElementById('orcamento-form');
+      const selectModelo = document.getElementById('modeloPainel');
+      if (selectModelo) selectModelo.addEventListener('change', atualizarPainelSelecionado);
+      if (moduloAtual === 'totem') {
+      const radiosEntrega = document.querySelectorAll('input[name="tipoEntrega"]');
+      radiosEntrega.forEach(radio => radio.addEventListener('change', toggleInstalacaoFields));
+      toggleInstalacaoFields(); 
+      }
+      if (moduloAtual === 'pilar') {
+      const tipoPilarSelect = document.getElementById('tipoPilar');
+      if (tipoPilarSelect) {
+      tipoPilarSelect.addEventListener('change', atualizarCamposPilar);
+      atualizarCamposPilar();
+      }
+      }
+
+      // Show/hide borda options (if present)
+      const incluirBorda = document.getElementById('incluirBorda');
+      const bordaOptions = document.getElementById('bordaOptions');
+      if (incluirBorda && bordaOptions) {
+        incluirBorda.addEventListener('change', () => {
+        bordaOptions.style.display = incluirBorda.checked ? 'block' : 'none';
+        });
+        // sync initial state
+        bordaOptions.style.display = incluirBorda.checked ? 'block' : 'none';
+      }
+
+      if (form) {
+      form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      calcularOrcamento(moduloAtual);
+      });
+      const formInputs = form.querySelectorAll('input, select');
+      formInputs.forEach(input => input.addEventListener('change', hideResultOnInputChange));
+      const btnGerarProposta = document.getElementById('btnGerarProposta');
+      if (btnGerarProposta) {
+      btnGerarProposta.addEventListener('click', async () => {
+      if (!ultimoResultado) {
+      alert("Calcule um orçamento antes de gerar a proposta.");
+      return;
+      }
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+      alert("Sessão expirada. Por favor, faça login novamente.");
+      window.location.href = 'login.html';
+      return;
+      }
+      const vendedor = vendedores.find(v => v.id === ultimoResultado.vendedorId);
+      const clienteNome = ultimoResultado?.inputs?.clienteNome || '-';
+      const vendedorNome = vendedor ? vendedor.nome : 'Geral';
+      const tituloProposta = `${vendedorNome} - ${clienteNome}`;
+
+      try {
+      const response = await fetch('https://backend-viapaineis.onrender.com/propostas', {
+      method: 'POST',
+      headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ title: tituloProposta, data: ultimoResultado })
+      });
+      if (!response.ok) throw new Error('Falha ao salvar a proposta.');
+      
+      // Salva os dados atuais (não ajustados) para impressão em outra aba — o preencherProposta da página proposta.html fará o ajuste de arredondamento para exibição
+      localStorage.setItem('dadosProposta', JSON.stringify(ultimoResultado));
+      window.open('../proposta.html', '_blank');
+      } catch (error) {
+      alert(error.message);
+      }
+      });
+      }
+      }
+    }
 });
