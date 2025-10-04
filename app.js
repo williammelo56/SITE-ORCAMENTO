@@ -390,7 +390,9 @@ custoControladora *= multiplicaControladora;
 
 // Calcular estrutura: quantidadeDeEstruturas × multiplicaEstrutura × valorEstruturaUnit
 custoEstrutura = quantidadeDeEstruturas * multiplicaEstrutura * valorEstruturaUnit;
-
+if (modulo === 'parede') {
+  custoEstrutura = 0;
+}
 const total = custoPainel + custoControladora + custoEstrutura + custoEletrica + custoInstalacao + custoPilar + custoSapata + custoACM + custoBorda;
 
 ultimoResultado = { 
