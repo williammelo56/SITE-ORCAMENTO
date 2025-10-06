@@ -23,7 +23,7 @@ let painelSelecionado = null;
 let ultimoResultado = null;
 
 // ===================================================================================
-// NOVA FUNÇÃO PARA GERENCIAR A BARRA DE USUÁRIO LOGADO
+// NOVA FUNÇÃO PARA GERENCIAR A BARRA DE USUÁRIO LOGADO (ADICIONADA AQUI)
 // ===================================================================================
 function gerenciarCabecalhoUsuario() {
     const header = document.getElementById('user-header');
@@ -431,9 +431,12 @@ custoControladora *= multiplicaControladora;
 
 // Calcular estrutura: quantidadeDeEstruturas × multiplicaEstrutura × valorEstruturaUnit
 custoEstrutura = quantidadeDeEstruturas * multiplicaEstrutura * valorEstruturaUnit;
+
+// Condição para zerar estrutura no módulo 'parede'
 if (modulo === 'parede') {
   custoEstrutura = 0;
 }
+
 const total = custoPainel + custoControladora + custoEstrutura + custoEletrica + custoInstalacao + custoPilar + custoSapata + custoACM + custoBorda;
 
 ultimoResultado = { 
@@ -476,8 +479,6 @@ function hideResultOnInputChange() {
     document.getElementById('resultado')?.classList.add('hidden');
     document.getElementById('container-gerar-proposta')?.classList.add('hidden');
 }
-
-
 
 function atualizarCamposPilar() {
     const select = document.getElementById('tipoPilar');
@@ -596,19 +597,24 @@ function preencherProposta() {
       const dim = (dados.painel && dados.painel.dimensao) ? dados.painel.dimensao.trim() : '';
       switch (dim) {
         case '0.96x0.96':
+          // 1 gabinete → exibe valor do gabinete
           valorPorM2Display = valorUnitarioNum;
           break;
         case '0.50x1.00':
+          // soma de dois gabinetes
           valorPorM2Display = valorUnitarioNum * 2;
           break;
         case '0.50x0.50':
+          // soma de quatro gabinetes
           valorPorM2Display = valorUnitarioNum * 4;
           break;
         default:
+          // fallback: tenta derivar por área (valorUnitario / area) ou exibe valorUnitario
           if (dados.painel && dados.painel.dimensao) {
             const parts = dados.painel.dimensao.split('x').map(s => parseFloat(s));
             if (parts.length === 2 && parts[0] > 0 && parts[1] > 0) {
-              const areaGab = parts[0] * parts[1];
+              const areaGab = parts[0] * parts[1]; // m² do gabinete
+              // Se valorUnitario representa o preço do gabinete, aqui mostramos o equivalente por m²
               valorPorM2Display = areaGab > 0 ? (valorUnitarioNum / areaGab) : valorUnitarioNum;
             } else {
               valorPorM2Display = valorUnitarioNum;
@@ -618,7 +624,9 @@ function preencherProposta() {
           }
       }
     }
+    // ---------------------------------------------------------------------
 
+    // Preencher nome do cliente (procura por campos comuns)
     let clienteNome = '-';
     if (dados.inputs) {
       clienteNome = dados.inputs.clienteNome || dados.inputs.cliente || dados.inputs['cliente-nome'] || '-';
@@ -630,6 +638,7 @@ function preencherProposta() {
     const clienteEl = document.getElementById('cliente-nome');
     if (clienteEl) clienteEl.textContent = clienteNome;
 
+    // Montar campo 'Objeto' dinamicamente
     const painel = dados.painel || {};
     const resolucao = painel.resolucao || '';
     const ambiente = painel.ambiente || '';
@@ -643,6 +652,7 @@ function preencherProposta() {
     const objetoEl = document.getElementById('objeto-proposta');
     if (objetoEl) objetoEl.textContent = objetoFinal;
 
+    // Equipamentos HTML (mostrar totals exatos) - agora usa dimensão do gabinete quando aplicável
     let labelEquipamento = '';
     if (dados.painel && dados.painel.tipo === 'm2') {
       labelEquipamento = `✓ ${Math.round(dados.qtd || 0)} m² de LED ${dados.painel?.resolucao || ''} – ${medidaCm} – ${dados.painel?.ambiente || ''}`;
@@ -672,6 +682,7 @@ function preencherProposta() {
     document.getElementById('tabela-equipamentos').innerHTML = equipamentosHTML;
     document.getElementById('total-equipamentos').textContent = formatCurrency(equipamentosTotal);
 
+    // Itens de instalação (usando os valores ajustados do objeto 'opcionais')
     let instalacaoHTML = "";
     if (opcionais.custoEstrutura > 0) instalacaoHTML += `<li class="line-item"><span class="label">✓ Estrutura metálica superior de sustentação dos gabinetes de LED;</span><span class="dots"></span><span class="price">${formatCurrency(opcionais.custoEstrutura)}</span></li>`;
     if (opcionais.custoEletrica > 0) instalacaoHTML += `<li class="line-item"><span class="label">✓ Elétrica de instalação interna;</span><span class="dots"></span><span class="price">${formatCurrency(opcionais.custoEletrica)}</span></li>`;
@@ -684,19 +695,24 @@ function preencherProposta() {
     document.getElementById('lista-instalacao').innerHTML = instalacaoHTML;
     document.getElementById('total-instalacao').textContent = formatCurrency(totalInstalacaoExibido);
 
+    // Totais
     document.getElementById('total-geral').textContent = formatCurrency(totalGeralExibido);
 
+    // Condições de pagamento com base no total arredondado
     const totalProjeto = totalGeralExibido;
 
+    // Opção 1: À vista com 5% de desconto (1+1)
     const valorComDesconto = totalProjeto * 0.95;
     const parcelaAVista = valorComDesconto / 2;
     const condicao1 = `A vista 5% desconto (1+1): ${formatCurrency(parcelaAVista)} + 1 de ${formatCurrency(parcelaAVista)}`;
 
+    // Opção 2: 40% de entrada + 6x
     const entrada40 = totalProjeto * 0.40;
     const saldo6x = totalProjeto * 0.60;
     const parcela6x = saldo6x / 6;
     const condicao2 = `40% de entrada e saldo em 6x (boleto ou cartão) sem juros: ${formatCurrency(entrada40)} + 6x ${formatCurrency(parcela6x)}`;
 
+    // Opção 3: 12x no cartão com 8% de juros
     const valorComJuros = totalProjeto * 1.12;
     const parcela12x = valorComJuros / 12;
     const condicao3 = `12x de ${formatCurrency(parcela12x)} no cartão de crédito`;
@@ -710,6 +726,7 @@ function preencherProposta() {
       `;
     }
 
+    // Vendedor
     if (vendedor) {
       document.getElementById('vendedor-nome').textContent = vendedor.nome;
       document.getElementById('vendedor-cargo').textContent = vendedor.cargo;
@@ -717,28 +734,29 @@ function preencherProposta() {
       document.getElementById('vendedor-email').textContent = vendedor.email;
     }
 
+    // Data
     const hoje = new Date();
     const dataFormatada = hoje.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
     document.getElementById('data-emissao').textContent = `Porto Belo, ${dataFormatada}`;
 }
 
-
 async function gerarPDF() {
     const elementoParaImprimir = document.getElementById('conteudo-proposta');
     const paginas = elementoParaImprimir.querySelectorAll('section.print-page');
     const docDefinition = {
-    pageSize: { width: 841.89, height: 595.28 },
+    pageSize: { width: 841.89, height: 595.28 }, // A4 horizontal (landscape)
     pageOrientation: 'landscape',
     pageMargins: [0, 0, 0, 0],
     content: []
     };
     for (let i = 0; i < paginas.length; i++) {
+    // Aumenta o scale para melhorar a nitidez (ex: 3)
     const canvas = await html2canvas(paginas[i], { scale: 3 });
-    const imgData = canvas.toDataURL('image/jpeg', 1.0);
+    const imgData = canvas.toDataURL('image/jpeg', 1.0); // qualidade máxima
     if (i > 0) {
     docDefinition.content.push({ text: '', pageBreak: 'before' });
     }
-    docDefinition.content.push({ image: imgData, width: 841.89 });
+    docDefinition.content.push({ image: imgData, width: 841.89 }); // largura A4 horizontal
     }
     pdfMake.createPdf(docDefinition).download('proposta.pdf');
 }
@@ -768,6 +786,7 @@ function gerarWord() {
     const totalEquipamentos = (Number(dados.custoPainel) || 0) + (Number(dados.custoControladora) || 0);
     const totalInstalacao = (Number(dados.custoEstrutura) || 0) + (Number(dados.custoEletrica) || 0) + (Number(dados.custoInstalacao) || 0) + (Number(dados.custoPilar) || 0) + (Number(dados.custoSapata) || 0) + (Number(dados.custoACM) || 0) + (Number(dados.custoBorda) || 0);
 
+    // Helper para criar uma linha da tabela
     const createLineItemRow = (label, price) => {
     return new TableRow({
     children: [
@@ -783,6 +802,7 @@ function gerarWord() {
     });
     };
 
+    // converte dimensao do painel (ex: "0.96x0.96") para "96x96cm"
     let dimensaoCm = '';
     if (dados.painel && dados.painel.dimensao) {
       const dparts = dados.painel.dimensao.split('x').map(s => parseFloat(s));
@@ -824,7 +844,7 @@ function gerarWord() {
     ],
     }],
     styles: {
-    paragraph: { run: { size: "22pt" } },
+    paragraph: { run: { size: "22pt" } }, // 11pt
     strong: { run: { bold: true, size: "22pt" } },
     }
     });
@@ -872,15 +892,11 @@ async function carregarHistorico() {
     }
 }
 
-// ===================================================================================
-// PONTO DE ENTRADA PRINCIPAL DA APLICAÇÃO
-// ===================================================================================
 document.addEventListener('DOMContentLoaded', () => {
     const body = document.body;
 
-    // CHAMA A FUNÇÃO DE GERENCIAR CABEÇALHO E PROTEÇÃO
-    gerenciarCabecalhoUsuario();
-
+    // --- CÓDIGO DE PROTEÇÃO E GERENCIAMENTO DE CABEÇALHO ---
+    gerenciarCabecalhoUsuario(); // << ALTERAÇÃO: Chamada da função
     const moduloAtual = body.dataset.modulo;
     const token = localStorage.getItem('authToken');
     const paginasPublicas = ['login', 'register'];
@@ -895,7 +911,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // ROTEAMENTO DE LÓGICA POR PÁGINA
+    // --- ROTEAMENTO DE LÓGICA POR PÁGINA ---
     if (moduloAtual === 'proposta') {
       preencherProposta();
       const btnSalvarPDF = document.getElementById('btnSalvarPDF');
@@ -907,24 +923,24 @@ document.addEventListener('DOMContentLoaded', () => {
       const form = document.getElementById('register-form');
       if (form) {
       form.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const name = form.name.value;
-        const email = form.email.value;
-        const password = form.password.value;
-        try {
-          const response = await fetch('https://backend-viapaineis.onrender.com/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, email, password })
-          });
-          const message = await response.text();
-          alert(message);
-          if (response.ok) {
-            form.reset();
-          }
-        } catch (error) {
-          alert('Erro ao conectar com o servidor.');
-        }
+      event.preventDefault();
+      const name = form.name.value;
+      const email = form.email.value;
+      const password = form.password.value;
+      try {
+      const response = await fetch('https://backend-viapaineis.onrender.com/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password })
+      });
+      const message = await response.text();
+      alert(message);
+      if (response.ok) {
+        form.reset();
+      }
+      } catch (error) {
+      alert('Erro ao conectar com o servidor.');
+      }
       });
       }
     }
@@ -944,8 +960,9 @@ document.addEventListener('DOMContentLoaded', () => {
           
           if (response.ok) {
             const data = await response.json();
+            // << ALTERAÇÃO: Salva o nome do usuário também
             localStorage.setItem('authToken', data.token);
-            localStorage.setItem('userEmail', data.user.email);
+            localStorage.setItem('userEmail', data.user.email); 
             localStorage.setItem('userName', data.user.name);
             
             alert('Login bem-sucedido!');
@@ -972,6 +989,7 @@ document.addEventListener('DOMContentLoaded', () => {
       localStorage.removeItem('propostaParaCarregar');
       document.getElementById('modeloPainel')?.dispatchEvent(new Event('change', { bubbles: true }));
 
+      // silencia alertas durante o cálculo inicial
       window.__carregandoHistorico = true;
       setTimeout(() => {
         calcularOrcamento(moduloAtual);
@@ -997,12 +1015,14 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       }
 
+      // Show/hide borda options (if present)
       const incluirBorda = document.getElementById('incluirBorda');
       const bordaOptions = document.getElementById('bordaOptions');
       if (incluirBorda && bordaOptions) {
         incluirBorda.addEventListener('change', () => {
         bordaOptions.style.display = incluirBorda.checked ? 'block' : 'none';
         });
+        // sync initial state
         bordaOptions.style.display = incluirBorda.checked ? 'block' : 'none';
       }
 
