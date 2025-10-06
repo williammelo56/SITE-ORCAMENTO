@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel de Vitrine Indoor — Via Painéis</title>
+  <link rel="stylesheet" href="../style.css" />
+  <script src="../produtos.js"></script>
+  <script defer src="../app.js"></script>
+</head>
+<header id="user-header" class="hidden">
+    <div class="container">
+        <span id="user-email"></span>
+        <button id="logout-button">Sair</button>
+    </div>
+</header>
+<body class="p-6 bg-gray-50" data-modulo="vitrine">
+  <a href="../index.html" class="text-blue-600 underline mb-4 inline-block">← Voltar</a>
+  <h1 class="text-2xl font-bold text-indigo-700 mb-4">Painel de Vitrine Indoor</h1>
+  <form id="orcamento-form">
+    <h2 class="text-lg font-semibold mb-2">Proposta em nome de:</h2>
+    <select id="selectVendedor" class="input mb-4"></select>
+
+    <h2 class="text-lg font-semibold mb-2">Dados do Cliente</h2>
+    <div>
+    <label for="clienteNome" class="block text-sm font-medium text-gray-700 mb-1">Nome do Cliente</label>
+    <input type="text" id="clienteNome" class="input mb-4" placeholder="Nome completo" />
+    </div>
+
+    <h2 class="text-lg font-semibold mb-2">Tipo de Face</h2>
+    <div class="flex items-center gap-6 mb-4">
+    <label class="flex items-center gap-2">
+    <input type="radio" name="tipoFace" value="uma" checked> Uma Face
+    </label>
+    <label class="flex items-center gap-2">
+    <input type="radio" name="tipoFace" value="dupla"> Dupla Face
+    </label>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+    <div>
+    <label for="larguraPainel" class="block text-sm font-medium text-gray-700 mb-1">Largura (m)</label>
+    <input type="number" id="larguraPainel" class="input" placeholder="Ex: 3.20" step="0.01" />
+    </div>
+    <div>
+    <label for="alturaPainel" class="block text-sm font-medium text-gray-700 mb-1">Altura (m)</label>
+    <input type="number" id="alturaPainel" class="input" placeholder="Ex: 1.92" step="0.01" />
+    </div>
+    </div>
+    <div>
+    <label for="modeloPainel" class="block text-sm font-medium text-gray-700 mb-1">Modelo do Painel</label>
+    <select id="modeloPainel" class="input mb-4">
+    <option value="">Selecionar modelo do painel</option>
+    </select>
+    </div>
+    <div>
+    <label for="valorUnitario" class="block text-sm font-medium text-gray-700 mb-1">Valor Unitário do Painel (R$)</label>
+    <input type="number" id="valorUnitario" class="input mb-4" readonly />
+    </div>
+    <div>
+    <label for="valorEstrutura" class="block text-sm font-medium text-gray-700 mb-1">Valor Unitário da Estrutura (R$)</label>
+    <input type="number" id="valorEstrutura" class="input mb-6" value="1360" />
+    </div>
+
+    <!-- NOVO: Incluir Borda + seleção do tipo -->
+    <div class="mb-4">
+      <label class="flex items-center gap-2">
+        <input type="checkbox" id="incluirBorda" /> Incluir borda no pedido?
+      </label>
+      <div id="bordaOptions" style="display:none; margin-top:8px;">
+        <label for="tipoBorda" class="block text-sm font-medium text-gray-700 mb-1">Tipo de borda</label>
+        <select id="tipoBorda" class="input w-48">
+          <option value="15x10">15x10 — R$ 293,00 / m</option>
+          <option value="40x10">40x10 — R$ 345,00 / m</option>
+        </select>
+      </div>
+    </div>
+    <!-- FIM: Borda -->
+
+    <h2 class="text-lg font-semibold mb-2">Instalação</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+    <div>
+    <label for="kmLocal" class="block text-sm font-medium text-gray-700 mb-1">Distância até o local (km)</label>
+    <input type="number" id="kmLocal" class="input" placeholder="Ex: 150" />
+    </div>
+    <div>
+    <label for="tempoViagem" class="block text-sm font-medium text-gray-700 mb-1">Tempo de viagem (h)</label>
+    <input type="number" id="tempoViagem" class="input" placeholder="Ex: 2" />
+    </div>
+    <div>
+    <label for="funcionarios" class="block text-sm font-medium text-gray-700 mb-1">Nº de Funcionários</label>
+    <input type="number" id="funcionarios" class="input" placeholder="Ex: 2" />
+    </div>
+    <div>
+    <label for="tempoTrabalho" class="block text-sm font-medium text-gray-700 mb-1">Horas de trabalho</label>
+    <input type="number" id="tempoTrabalho" class="input" placeholder="Ex: 8" />
+    </div>
+    <div>
+    <label for="horasMunk" class="block text-sm font-medium text-gray-700 mb-1">Horas MUNCK</label>
+    <input type="number" id="horasMunk" class="input" placeholder="Normalmente 0" />
+    </div>
+    </div>
+    <div>
+    <label for="controladora" class="block text-sm font-medium text-gray-700 mb-1">Controladora</label>
+    <select id="controladora" class="input mb-6">
+    <option value="">Selecionar Controladora</option>
+    <option value="Novastar TB1" data-valor="1450">Controladora de video - Novastar TB1</option>
+    <option value="Huidu A3" data-valor="1040">Controladora de video - Huidu A3</option>
+    <option value="Novastar TB2" data-valor="2400">Controladora de vídeo - Novastar TB2</option>
+    <option value="Novastar TB30" data-valor="2400">Controladora de vídeo - Novastar TB30</option>
+    <option value="Novastar TB40" data-valor="2400">Controladora de vídeo - Novastar TB40</option>
+    </select>
+    </div>
+    <button type="submit" class="btn-indigo mb-6">💰 Calcular Orçamento</button>
+  </form>
+  <div id="resultado" class="bg-white p-4 rounded shadow text-gray-800 hidden"></div>
+   <div id="container-gerar-proposta" class="mt-4 hidden">
+    <button type="button" id="btnGerarProposta" class="btn-indigo">📄 Gerar Proposta</button>
+  </div>
+  <script>
+    // Pega todos os radios de tipo de face e o input do valor da estrutura
+    const radiosFace = document.querySelectorAll('input[name="tipoFace"]');
+    const inputValorEstrutura = document.getElementById("valorEstrutura");
+
+    // Função que atualiza o valor do input
+    function atualizarValorEstrutura() {
+    const faceSelecionada = document.querySelector('input[name="tipoFace"]:checked').value;
+    inputValorEstrutura.value = faceSelecionada === "dupla" ? 1800 : 1360;
+    }
+
+    // Atualiza o valor quando a página carrega
+    atualizarValorEstrutura();
+
+    // Atualiza o valor sempre que o usuário mudar a face
+    radiosFace.forEach(radio => {
+    radio.addEventListener("change", atualizarValorEstrutura);
+    });
+
+    // Toggle Borda
+    const incluirBorda = document.getElementById('incluirBorda');
+    const bordaOptions = document.getElementById('bordaOptions');
+    if (incluirBorda && bordaOptions) {
+      incluirBorda.addEventListener('change', () => {
+        bordaOptions.style.display = incluirBorda.checked ? 'block' : 'none';
+      });
+      // inicial
+      bordaOptions.style.display = incluirBorda.checked ? 'block' : 'none';
+    }
+</script>
+</body>
+</html>
