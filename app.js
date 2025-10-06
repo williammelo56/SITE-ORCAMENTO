@@ -22,6 +22,47 @@ const vendedores = [
 let painelSelecionado = null;
 let ultimoResultado = null;
 
+// ===================================================================================
+// NOVA FUNÇÃO PARA GERENCIAR A BARRA DE USUÁRIO LOGADO
+// ===================================================================================
+function gerenciarCabecalhoUsuario() {
+    const header = document.getElementById('user-header');
+    const userEmailSpan = document.getElementById('user-email');
+    const logoutButton = document.getElementById('logout-button');
+
+    if (!header || !userEmailSpan || !logoutButton) {
+        return;
+    }
+
+    const token = localStorage.getItem('authToken');
+    const userName = localStorage.getItem('userName');
+
+    if (token && userName) {
+        userEmailSpan.textContent = `Usuário: ${userName}`;
+        header.classList.remove('hidden');
+
+        logoutButton.addEventListener('click', () => {
+            if (confirm('Tem certeza que deseja sair?')) {
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('userEmail');
+                localStorage.removeItem('userName');
+                alert('Você saiu da sua conta.');
+
+                const modulosEmSubpasta = ['fachada', 'totem', 'vitrine', 'parede'];
+                const moduloAtual = document.body.dataset.modulo;
+                let caminhoParaLogin = 'login.html';
+                if (modulosEmSubpasta.includes(moduloAtual)) {
+                    caminhoParaLogin = '../login.html';
+                }
+                window.location.href = caminhoParaLogin;
+            }
+        });
+    } else {
+        header.classList.add('hidden');
+    }
+}
+
+
 function formatCurrency(value) {
     return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
@@ -390,12 +431,9 @@ custoControladora *= multiplicaControladora;
 
 // Calcular estrutura: quantidadeDeEstruturas × multiplicaEstrutura × valorEstruturaUnit
 custoEstrutura = quantidadeDeEstruturas * multiplicaEstrutura * valorEstruturaUnit;
-
-// Condição para zerar estrutura no módulo 'parede'
 if (modulo === 'parede') {
   custoEstrutura = 0;
 }
-
 const total = custoPainel + custoControladora + custoEstrutura + custoEletrica + custoInstalacao + custoPilar + custoSapata + custoACM + custoBorda;
 
 ultimoResultado = { 
@@ -438,6 +476,8 @@ function hideResultOnInputChange() {
     document.getElementById('resultado')?.classList.add('hidden');
     document.getElementById('container-gerar-proposta')?.classList.add('hidden');
 }
+
+
 
 function atualizarCamposPilar() {
     const select = document.getElementById('tipoPilar');
@@ -556,24 +596,19 @@ function preencherProposta() {
       const dim = (dados.painel && dados.painel.dimensao) ? dados.painel.dimensao.trim() : '';
       switch (dim) {
         case '0.96x0.96':
-          // 1 gabinete → exibe valor do gabinete
           valorPorM2Display = valorUnitarioNum;
           break;
         case '0.50x1.00':
-          // soma de dois gabinetes
           valorPorM2Display = valorUnitarioNum * 2;
           break;
         case '0.50x0.50':
-          // soma de quatro gabinetes
           valorPorM2Display = valorUnitarioNum * 4;
           break;
         default:
-          // fallback: tenta derivar por área (valorUnitario / area) ou exibe valorUnitario
           if (dados.painel && dados.painel.dimensao) {
             const parts = dados.painel.dimensao.split('x').map(s => parseFloat(s));
             if (parts.length === 2 && parts[0] > 0 && parts[1] > 0) {
-              const areaGab = parts[0] * parts[1]; // m² do gabinete
-              // Se valorUnitario representa o preço do gabinete, aqui mostramos o equivalente por m²
+              const areaGab = parts[0] * parts[1];
               valorPorM2Display = areaGab > 0 ? (valorUnitarioNum / areaGab) : valorUnitarioNum;
             } else {
               valorPorM2Display = valorUnitarioNum;
@@ -583,9 +618,7 @@ function preencherProposta() {
           }
       }
     }
-    // ---------------------------------------------------------------------
 
-    // Preencher nome do cliente (procura por campos comuns)
     let clienteNome = '-';
     if (dados.inputs) {
       clienteNome = dados.inputs.clienteNome || dados.inputs.cliente || dados.inputs['cliente-nome'] || '-';
@@ -597,7 +630,6 @@ function preencherProposta() {
     const clienteEl = document.getElementById('cliente-nome');
     if (clienteEl) clienteEl.textContent = clienteNome;
 
-    // Montar campo 'Objeto' dinamicamente
     const painel = dados.painel || {};
     const resolucao = painel.resolucao || '';
     const ambiente = painel.ambiente || '';
@@ -611,7 +643,6 @@ function preencherProposta() {
     const objetoEl = document.getElementById('objeto-proposta');
     if (objetoEl) objetoEl.textContent = objetoFinal;
 
-    // Equipamentos HTML (mostrar totals exatos) - agora usa dimensão do gabinete quando aplicável
     let labelEquipamento = '';
     if (dados.painel && dados.painel.tipo === 'm2') {
       labelEquipamento = `✓ ${Math.round(dados.qtd || 0)} m² de LED ${dados.painel?.resolucao || ''} – ${medidaCm} – ${dados.painel?.ambiente || ''}`;
@@ -641,7 +672,6 @@ function preencherProposta() {
     document.getElementById('tabela-equipamentos').innerHTML = equipamentosHTML;
     document.getElementById('total-equipamentos').textContent = formatCurrency(equipamentosTotal);
 
-    // Itens de instalação (usando os valores ajustados do objeto 'opcionais')
     let instalacaoHTML = "";
     if (opcionais.custoEstrutura > 0) instalacaoHTML += `<li class="line-item"><span class="label">✓ Estrutura metálica superior de sustentação dos gabinetes de LED;</span><span class="dots"></span><span class="price">${formatCurrency(opcionais.custoEstrutura)}</span></li>`;
     if (opcionais.custoEletrica > 0) instalacaoHTML += `<li class="line-item"><span class="label">✓ Elétrica de instalação interna;</span><span class="dots"></span><span class="price">${formatCurrency(opcionais.custoEletrica)}</span></li>`;
@@ -654,24 +684,19 @@ function preencherProposta() {
     document.getElementById('lista-instalacao').innerHTML = instalacaoHTML;
     document.getElementById('total-instalacao').textContent = formatCurrency(totalInstalacaoExibido);
 
-    // Totais
     document.getElementById('total-geral').textContent = formatCurrency(totalGeralExibido);
 
-    // Condições de pagamento com base no total arredondado
     const totalProjeto = totalGeralExibido;
 
-    // Opção 1: À vista com 5% de desconto (1+1)
     const valorComDesconto = totalProjeto * 0.95;
     const parcelaAVista = valorComDesconto / 2;
     const condicao1 = `A vista 5% desconto (1+1): ${formatCurrency(parcelaAVista)} + 1 de ${formatCurrency(parcelaAVista)}`;
 
-    // Opção 2: 40% de entrada + 6x
     const entrada40 = totalProjeto * 0.40;
     const saldo6x = totalProjeto * 0.60;
     const parcela6x = saldo6x / 6;
     const condicao2 = `40% de entrada e saldo em 6x (boleto ou cartão) sem juros: ${formatCurrency(entrada40)} + 6x ${formatCurrency(parcela6x)}`;
 
-    // Opção 3: 12x no cartão com 8% de juros
     const valorComJuros = totalProjeto * 1.12;
     const parcela12x = valorComJuros / 12;
     const condicao3 = `12x de ${formatCurrency(parcela12x)} no cartão de crédito`;
@@ -685,7 +710,6 @@ function preencherProposta() {
       `;
     }
 
-    // Vendedor
     if (vendedor) {
       document.getElementById('vendedor-nome').textContent = vendedor.nome;
       document.getElementById('vendedor-cargo').textContent = vendedor.cargo;
@@ -693,29 +717,28 @@ function preencherProposta() {
       document.getElementById('vendedor-email').textContent = vendedor.email;
     }
 
-    // Data
     const hoje = new Date();
     const dataFormatada = hoje.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
     document.getElementById('data-emissao').textContent = `Porto Belo, ${dataFormatada}`;
 }
 
+
 async function gerarPDF() {
     const elementoParaImprimir = document.getElementById('conteudo-proposta');
     const paginas = elementoParaImprimir.querySelectorAll('section.print-page');
     const docDefinition = {
-    pageSize: { width: 841.89, height: 595.28 }, // A4 horizontal (landscape)
+    pageSize: { width: 841.89, height: 595.28 },
     pageOrientation: 'landscape',
     pageMargins: [0, 0, 0, 0],
     content: []
     };
     for (let i = 0; i < paginas.length; i++) {
-    // Aumenta o scale para melhorar a nitidez (ex: 3)
     const canvas = await html2canvas(paginas[i], { scale: 3 });
-    const imgData = canvas.toDataURL('image/jpeg', 1.0); // qualidade máxima
+    const imgData = canvas.toDataURL('image/jpeg', 1.0);
     if (i > 0) {
     docDefinition.content.push({ text: '', pageBreak: 'before' });
     }
-    docDefinition.content.push({ image: imgData, width: 841.89 }); // largura A4 horizontal
+    docDefinition.content.push({ image: imgData, width: 841.89 });
     }
     pdfMake.createPdf(docDefinition).download('proposta.pdf');
 }
@@ -745,7 +768,6 @@ function gerarWord() {
     const totalEquipamentos = (Number(dados.custoPainel) || 0) + (Number(dados.custoControladora) || 0);
     const totalInstalacao = (Number(dados.custoEstrutura) || 0) + (Number(dados.custoEletrica) || 0) + (Number(dados.custoInstalacao) || 0) + (Number(dados.custoPilar) || 0) + (Number(dados.custoSapata) || 0) + (Number(dados.custoACM) || 0) + (Number(dados.custoBorda) || 0);
 
-    // Helper para criar uma linha da tabela
     const createLineItemRow = (label, price) => {
     return new TableRow({
     children: [
@@ -761,7 +783,6 @@ function gerarWord() {
     });
     };
 
-    // converte dimensao do painel (ex: "0.96x0.96") para "96x96cm"
     let dimensaoCm = '';
     if (dados.painel && dados.painel.dimensao) {
       const dparts = dados.painel.dimensao.split('x').map(s => parseFloat(s));
@@ -803,7 +824,7 @@ function gerarWord() {
     ],
     }],
     styles: {
-    paragraph: { run: { size: "22pt" } }, // 11pt
+    paragraph: { run: { size: "22pt" } },
     strong: { run: { bold: true, size: "22pt" } },
     }
     });
@@ -851,37 +872,30 @@ async function carregarHistorico() {
     }
 }
 
+// ===================================================================================
+// PONTO DE ENTRADA PRINCIPAL DA APLICAÇÃO
+// ===================================================================================
 document.addEventListener('DOMContentLoaded', () => {
     const body = document.body;
 
-    // --- INÍCIO DO CÓDIGO DE PROTEÇÃO ---
+    // CHAMA A FUNÇÃO DE GERENCIAR CABEÇALHO E PROTEÇÃO
+    gerenciarCabecalhoUsuario();
+
     const moduloAtual = body.dataset.modulo;
     const token = localStorage.getItem('authToken');
-
-    // Lista de páginas que são públicas (não precisam de login)
     const paginasPublicas = ['login', 'register'];
 
-    // Verifica se a página atual NÃO é pública E se o usuário NÃO tem um token
     if (!paginasPublicas.includes(moduloAtual) && !token) {
-        
-        // Define o caminho correto para a página de login
         let caminhoParaLogin = 'login.html';
-
-        // Lista de módulos que estão dentro de subpastas (ex: /fachada/fachada.html)
         const modulosEmSubpasta = ['fachada', 'totem', 'vitrine', 'parede'];
-
-        // Se o módulo atual estiver em uma subpasta, o caminho precisa voltar um nível (../)
         if (modulosEmSubpasta.includes(moduloAtual)) {
             caminhoParaLogin = '../login.html';
         }
-
-        // Redireciona o usuário para a tela de login
         window.location.href = caminhoParaLogin;
-        
-        return; // Para a execução do resto do script para evitar erros na página
+        return;
     }
-    // --- FIM DO CÓDIGO DE PROTEÇÃO ---
 
+    // ROTEAMENTO DE LÓGICA POR PÁGINA
     if (moduloAtual === 'proposta') {
       preencherProposta();
       const btnSalvarPDF = document.getElementById('btnSalvarPDF');
@@ -893,22 +907,24 @@ document.addEventListener('DOMContentLoaded', () => {
       const form = document.getElementById('register-form');
       if (form) {
       form.addEventListener('submit', async (event) => {
-      event.preventDefault();
-      const name = form.name.value;
-      const email = form.email.value;
-      const password = form.password.value;
-      try {
-      const response = await fetch('https://backend-viapaineis.onrender.com/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, password })
-      });
-      const message = await response.text();
-      alert(message);
-      if (response.ok) form.reset();
-      } catch (error) {
-      alert('Erro ao conectar com o servidor.');
-      }
+        event.preventDefault();
+        const name = form.name.value;
+        const email = form.email.value;
+        const password = form.password.value;
+        try {
+          const response = await fetch('https://backend-viapaineis.onrender.com/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, password })
+          });
+          const message = await response.text();
+          alert(message);
+          if (response.ok) {
+            form.reset();
+          }
+        } catch (error) {
+          alert('Erro ao conectar com o servidor.');
+        }
       });
       }
     }
@@ -916,27 +932,31 @@ document.addEventListener('DOMContentLoaded', () => {
       const form = document.getElementById('login-form');
       if (form) {
       form.addEventListener('submit', async (event) => {
-      event.preventDefault();
-      const email = form.email.value;
-      const password = form.password.value;
-      try {
-      const response = await fetch('https://backend-viapaineis.onrender.com/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
-      });
-      if (response.ok) {
-      const data = await response.json();
-      localStorage.setItem('authToken', data.token);
-      alert('Login bem-sucedido!');
-      window.location.href = 'index.html';
-      } else {
-      const message = await response.text();
-      alert(`Falha no login: ${message}`);
-      }
-      } catch (error) {
-      alert('Erro ao conectar com o servidor.');
-      }
+        event.preventDefault();
+        const email = form.email.value;
+        const password = form.password.value;
+        try {
+          const response = await fetch('https://backend-viapaineis.onrender.com/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            localStorage.setItem('authToken', data.token);
+            localStorage.setItem('userEmail', data.user.email);
+            localStorage.setItem('userName', data.user.name);
+            
+            alert('Login bem-sucedido!');
+            window.location.href = 'index.html';
+          } else {
+            const message = await response.text();
+            alert(`${message}`);
+          }
+        } catch (error) {
+          alert('Erro ao conectar com o servidor.');
+        }
       });
       }
     }
@@ -952,7 +972,6 @@ document.addEventListener('DOMContentLoaded', () => {
       localStorage.removeItem('propostaParaCarregar');
       document.getElementById('modeloPainel')?.dispatchEvent(new Event('change', { bubbles: true }));
 
-      // silencia alertas durante o cálculo inicial
       window.__carregandoHistorico = true;
       setTimeout(() => {
         calcularOrcamento(moduloAtual);
@@ -978,14 +997,12 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       }
 
-      // Show/hide borda options (if present)
       const incluirBorda = document.getElementById('incluirBorda');
       const bordaOptions = document.getElementById('bordaOptions');
       if (incluirBorda && bordaOptions) {
         incluirBorda.addEventListener('change', () => {
         bordaOptions.style.display = incluirBorda.checked ? 'block' : 'none';
         });
-        // sync initial state
         bordaOptions.style.display = incluirBorda.checked ? 'block' : 'none';
       }
 
@@ -1025,7 +1042,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       if (!response.ok) throw new Error('Falha ao salvar a proposta.');
       
-      // Salva os dados atuais (não ajustados) para impressão em outra aba — o preencherProposta da página proposta.html fará o ajuste de arredondamento para exibição
       localStorage.setItem('dadosProposta', JSON.stringify(ultimoResultado));
       window.open('../proposta.html', '_blank');
       } catch (error) {
