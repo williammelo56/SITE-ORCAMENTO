@@ -16,7 +16,7 @@ const vendedores = [
     { id: 'patricia', nome: 'Patricia Gomez', cargo: 'Consultora comercial - Via Painéis', fone: '(47) 93618-1267', email: 'vendas5@viapaineis.com.br' },
     { id: 'William', nome: 'William Melo', cargo: 'Consultor Comercial', fone: '(47) 99722-1472', email: 'vendas1@viapaineis.com.br' },
     { id: 'Patric', nome: 'Patric Marques', cargo: 'Consultor Comercial', fone: '(47) 99711-2059', email: 'vendas4@viapaineis.com.br' },
-   { id: 'Patric', nome: 'Frederico Carvalho', cargo: 'Diretor', fone: '(47) 9995-3208', email: 'adm@viapaineis.com.br' },
+   { id: 'Frederico Carvalho', nome: 'Frederico Carvalho', cargo: 'Diretor', fone: '(47) 9995-3208', email: 'adm@viapaineis.com.br' },
     { id: 'Paulo', nome: 'Paulo Marques', cargo: 'Gerente Comercial', fone: '(47) 99752-0289', email: 'paulo.marques@viapaineis.com.br' }
 ];
 
@@ -1074,3 +1074,4 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 });
+
