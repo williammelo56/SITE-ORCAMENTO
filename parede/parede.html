@@ -107,7 +107,16 @@
         <option value="Huidu A3" data-valor="1040">Controladora de video - Huidu A3</option>
       </select>
     </div>
-      <!-- Conteúdo da locação (inicialmente oculto) -->
+      <!-- ============================== -->
+<!-- BLOCO: OPÇÃO DE LOCAÇÃO -->
+<!-- ============================== -->
+<div class="mt-6 border-t border-gray-300 pt-4">
+  <label class="flex items-center gap-2 mb-2">
+    <input type="checkbox" id="oferecerLocacao" />
+    <span class="font-semibold text-gray-800">Oferecer opção de locação</span>
+  </label>
+
+  <!-- Conteúdo da locação (inicialmente oculto) -->
   <div id="blocoLocacao" style="display: none;">
     <h3 class="text-sm font-medium text-gray-700 mb-2">Condições de locação</h3>
 
@@ -131,6 +140,7 @@
 </div>
 <!-- ============================== -->
 <!-- FIM DO BLOCO DE LOCAÇÃO -->
+
     <button type="submit" class="btn-indigo mb-6">💰 Calcular Orçamento</button>
   </form>
   <div id="resultado" class="bg-white p-4 rounded shadow text-gray-800 hidden"></div>
@@ -141,5 +151,6 @@
 </body>
 
 </html>
+
 
 
