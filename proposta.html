@@ -472,6 +472,20 @@
         </ul>
       </div>
 
+      <div class="payment-conditions" id="condicoes-locacao" style="margin-top: 12px;">
+  <div class="section-title">Condição de pagamento (Locação):</div>
+  <table style="width:100%; font-size:11pt; border-collapse: collapse;">
+    <thead>
+      <tr style="border-bottom: 1px solid #ccc;">
+        <th style="text-align:left;">Prazo</th>
+        <th style="text-align:left;">Parcela mensal</th>
+        <th style="text-align:left;">Total pago</th>
+      </tr>
+    </thead>
+    <tbody id="tabelaLocacaoProposta"></tbody>
+  </table>
+</div>
+
       <!-- Prazo e Garantia -->
       <div class="additional-info">
         <div class="dotted-line">
@@ -595,5 +609,24 @@ document.addEventListener('DOMContentLoaded', () => {
   }, 200);
 });
 </script>
+  document.addEventListener('DOMContentLoaded', () => {
+  const dados = JSON.parse(localStorage.getItem('dadosProposta'));
+  if (dados?.locacao) {
+    const tabela = document.getElementById('tabelaLocacaoProposta');
+    tabela.innerHTML = '';
+    for (const [prazo, valores] of Object.entries(dados.locacao)) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${prazo}</td>
+        <td>R$ ${valores.parcela.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+        <td>R$ ${valores.total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+      `;
+      tabela.appendChild(tr);
+    }
+  } else {
+    document.getElementById('condicoes-locacao').style.display = 'none';
+  }
+});
+
 </body>
 </html>
