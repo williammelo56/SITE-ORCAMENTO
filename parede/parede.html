@@ -106,6 +106,30 @@
         <option value="Huidu A3" data-valor="1040">Controladora de video - Huidu A3</option>
       </select>
     </div>
+      <!-- Conteúdo da locação (inicialmente oculto) -->
+  <div id="blocoLocacao" style="display: none;">
+    <h3 class="text-sm font-medium text-gray-700 mb-2">Condições de locação</h3>
+
+    <table class="w-full text-sm border border-gray-300 rounded">
+      <thead class="bg-gray-100 text-gray-700">
+        <tr>
+          <th class="py-1 px-2 text-left">Prazo</th>
+          <th class="py-1 px-2 text-left">Parcela mensal</th>
+          <th class="py-1 px-2 text-left">Total pago</th>
+        </tr>
+      </thead>
+      <tbody id="tabelaLocacao">
+        <tr>
+          <td colspan="3" class="py-2 px-3 text-gray-400 italic text-center">
+            As condições aparecerão aqui quando ativar a opção de locação.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<!-- ============================== -->
+<!-- FIM DO BLOCO DE LOCAÇÃO -->
     <button type="submit" class="btn-indigo mb-6">💰 Calcular Orçamento</button>
   </form>
   <div id="resultado" class="bg-white p-4 rounded shadow text-gray-800 hidden"></div>
@@ -116,3 +140,4 @@
 </body>
 
 </html>
+
