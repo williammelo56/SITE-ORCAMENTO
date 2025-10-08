@@ -388,6 +388,66 @@
       }
     });
   </script>
+<!-- ✅ Cálculo e renderização da LOCAÇÃO direto na proposta -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const dados = JSON.parse(localStorage.getItem('dadosProposta'));
+
+  // Verifica se o total existe e não há dados de locação salvos
+  if (dados && !dados.locacao && dados.total > 0) {
+
+    // Função PRICE (copiada fielmente de locacao.js)
+    function calcularLocacao(valorTotal) {
+      if (!valorTotal || valorTotal <= 0) return [];
+      const prazos = [12, 24, 36, 48, 60];
+      const resultados = [];
+      for (let n of prazos) {
+        const i = n === 12 ? 0.026 : 0.024;
+        const pmt = valorTotal * (i * Math.pow(1 + i, n)) / (Math.pow(1 + i, n) - 1);
+        resultados.push({
+          prazo: n,
+          valor: pmt,
+          totalPago: pmt * n,
+          acrescimo: ((pmt * n / valorTotal) - 1) * 100
+        });
+      }
+      return resultados;
+    }
+
+    // Função de formatação (como em locacao.js)
+    function formatarMoeda(valor) {
+      return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    // Função para preencher tabela
+    function preencherTabelaLocacao(resultados) {
+      const tabela = document.getElementById('tabelaLocacaoProposta');
+      const bloco = document.getElementById('condicoes-locacao');
+      if (!tabela || !bloco) return;
+      if (!resultados.length) {
+        bloco.style.display = 'none';
+        return;
+      }
+      tabela.innerHTML = resultados.map(item => `
+        <tr>
+          <td>${item.prazo} meses</td>
+          <td>${formatarMoeda(item.valor)}</td>
+          <td>${formatarMoeda(item.totalPago)}</td>
+        </tr>
+      `).join('');
+      bloco.style.display = 'block';
+    }
+
+    // Calcula e exibe a tabela
+    const parcelas = calcularLocacao(dados.total);
+    preencherTabelaLocacao(parcelas);
+
+    // Atualiza o localStorage com o campo locacao, para manter consistência
+    dados.locacao = parcelas;
+    localStorage.setItem('dadosProposta', JSON.stringify(dados));
+  }
+});
+</script>
 
 </body>
 </html>
