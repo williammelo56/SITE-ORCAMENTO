@@ -588,6 +588,11 @@ function preencherProposta() {
     dadosAjustados.total = totalGeralExibido;
     dadosAjustados.diferencaArredondamento = diferencaArredondamento;
 
+  if (typeof calcularLocacao === 'function') {
+  const parcelasLocacao = calcularLocacao(ultimoResultado.total);
+  ultimoResultado.locacao = parcelasLocacao;
+}
+
     // Salva a versão ajustada no localStorage para que PDF/Word usem os mesmos números exibidos
     localStorage.setItem('dadosProposta', JSON.stringify(dadosAjustados));
 
@@ -1103,5 +1108,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 });
+
 
 
