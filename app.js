@@ -476,6 +476,35 @@ resultadoDiv.classList.remove('hidden');
 document.getElementById('container-gerar-proposta')?.classList.remove('hidden');
 }
 
+// =============================================================
+// BLOCO DE INTEGRAÇÃO COM LOCAÇÃO
+// =============================================================
+try {
+  const checkboxLocacao = document.getElementById('oferecerLocacao');
+  if (checkboxLocacao) {
+    checkboxLocacao.addEventListener('change', () => {
+      const ativo = checkboxLocacao.checked;
+      alternarBlocoLocacao(ativo);
+
+      if (ativo) {
+        // Extrai o valor total do orçamento já exibido
+        const textoTotal = document.querySelector('#resultado .text-indigo-700')?.innerText || '';
+        const valorNumerico = parseFloat(textoTotal.replace(/[^\d,]/g, '').replace(',', '.'));
+
+        if (!isNaN(valorNumerico) && valorNumerico > 0) {
+          const parcelas = calcularLocacao(valorNumerico);
+          preencherTabelaLocacao(parcelas);
+        } else {
+          console.warn('Valor total do orçamento não encontrado ou inválido.');
+        }
+      }
+    });
+  }
+} catch (e) {
+  console.error('Erro ao inicializar módulo de locação:', e);
+}
+// =============================================================
+
 function hideResultOnInputChange() {
     document.getElementById('resultado')?.classList.add('hidden');
     document.getElementById('container-gerar-proposta')?.classList.add('hidden');
@@ -1074,4 +1103,5 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 });
+
 
