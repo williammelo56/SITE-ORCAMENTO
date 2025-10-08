@@ -179,6 +179,39 @@
         </div>
       </div>
     </div>
+        <!-- ============================== -->
+<!-- BLOCO: OPÇÃO DE LOCAÇÃO -->
+<!-- ============================== -->
+<div class="mt-6 border-t border-gray-300 pt-4">
+  <label class="flex items-center gap-2 mb-2">
+    <input type="checkbox" id="oferecerLocacao" />
+    <span class="font-semibold text-gray-800">Oferecer opção de locação</span>
+  </label>
+
+  <!-- Conteúdo da locação (inicialmente oculto) -->
+  <div id="blocoLocacao" style="display: none;">
+    <h3 class="text-sm font-medium text-gray-700 mb-2">Condições de locação</h3>
+
+    <table class="w-full text-sm border border-gray-300 rounded">
+      <thead class="bg-gray-100 text-gray-700">
+        <tr>
+          <th class="py-1 px-2 text-left">Prazo</th>
+          <th class="py-1 px-2 text-left">Parcela mensal</th>
+          <th class="py-1 px-2 text-left">Total pago</th>
+        </tr>
+      </thead>
+      <tbody id="tabelaLocacao">
+        <tr>
+          <td colspan="3" class="py-2 px-3 text-gray-400 italic text-center">
+            As condições aparecerão aqui quando ativar a opção de locação.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<!-- ============================== -->
+<!-- FIM DO BLOCO DE LOCAÇÃO -->
 <!-- FIM: Pergunta e campos do Pilar de ferro -->
     <button type="submit" class="btn-indigo mb-6">💰 Calcular Orçamento</button>
   </form>
@@ -258,4 +291,5 @@ if (chkPilar && containerPilar) {
     }
 </script>
 </body>
+
 </html>
