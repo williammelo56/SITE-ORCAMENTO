@@ -54,6 +54,18 @@
       <label for="valorUnitario" class="block text-sm font-medium text-gray-700 mb-1">Valor Unitário do Painel (R$)</label>
       <input type="number" id="valorUnitario" class="input mb-6" readonly />
     </div>
+       <div class="mb-4">
+      <label class="flex items-center gap-2">
+        <input type="checkbox" id="incluirBorda" /> Incluir borda no pedido?
+      </label>
+      <div id="bordaOptions" style="display:none; margin-top:8px;">
+        <label for="tipoBorda" class="block text-sm font-medium text-gray-700 mb-1">Tipo de borda</label>
+        <select id="tipoBorda" class="input w-48">
+          <option value="15x10">15x10 — R$ 293,00 / m</option>
+          <option value="40x10">40x10 — R$ 345,00 / m</option>
+        </select>
+      </div>
+    </div>
     <h2 class="text-lg font-semibold mb-2">Instalação</h2>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
       <div>
@@ -102,4 +114,5 @@
   </div>
   
 </body>
+
 </html>
