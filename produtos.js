@@ -7,6 +7,7 @@ const produtosPainel = [
 
   // --- Sob Medida (m²) ---
   { nome: "P2.5 GOB ACM", resolucao: "P2.5", dimensao: "0.32x0.16", valor: "9630.00", tipo: "m2", ambiente: "indoor" },
+  { nome: "P2.5 ACM", resolucao: "P2.5", dimensao: "0.32x0.16", valor: "12500.00", tipo: "m2", ambiente: "outdoor" },
   { nome: "P3 ACM", resolucao: "P3", dimensao: "0.32x0.16", valor: "10950.00", tipo: "m2", ambiente: "outdoor" },
   { nome: "P4 ACM", resolucao: "P4", dimensao: "0.32x0.16", valor: "6420.00", tipo: "m2", ambiente: "indoor" },
   { nome: "P5 ACM", resolucao: "P5", dimensao: "0.32x0.16", valor: "8585.00", tipo: "m2", ambiente: "outdoor" },
